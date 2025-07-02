@@ -182,6 +182,11 @@ function AddStaff() {
       department: "IPU",
       position: "Cleaner Staff 4",
     },
+    "S-0528": {
+      fullName: "Saw Kaw Gay Moo",
+      department: "IPU",
+      position: "Nurse/HW 2",
+    },
     "S-1023": {
       fullName: "Than Than Win",
       department: "IPU",
@@ -444,7 +449,7 @@ function AddStaff() {
     },
     "S-1093": {
       fullName: "Naw Thidar Win",
-      department: "413 Nursing Program",
+      department: "Nursing Program",
       position: "Nurse/HW (3)",
     },
     "S-1094": {
@@ -527,6 +532,7 @@ function AddStaff() {
       department: "VCT, Blood Bank Department (HIV Program)",
       position: "Supervisor (2)",
     },
+
     "S-0897": {
       fullName: "Naw Jackalin Aung",
       department: "VCT, Blood Bank Department (HIV Program)",
@@ -750,7 +756,7 @@ function AddStaff() {
     "S-0865": {
       fullName: "Saw Paing Aung",
       department: "HIS and Registration",
-      position: "Covid vaccination Coordinator (2)",
+      position: "HIS and Registration Coordinator (2)",
     },
     "S-0882": {
       fullName: "Saw Chit San Lay",
@@ -839,7 +845,7 @@ function AddStaff() {
     },
     "S-0182": {
       fullName: "Nan Kyi Kyi Win",
-      department: "ab",
+      department: "Lab",
       position: "Lab Staff (1)",
     },
     "S-0184": {
@@ -1269,72 +1275,72 @@ function AddStaff() {
     },
     "S-0085": {
       fullName: "Naw Lu Bway Doh",
-      department: "Central Pharmacy",
+      department: "Pharmacy OPD and Central Pharmacy",
       position: "CHW - Health Worker (1)",
     },
     "S-0121": {
       fullName: "Su Su Myint (Shar Ro Paw)",
-      department: "Central Pharmacy",
+      department: "Pharmacy OPD and Central Pharmacy",
       position: "In-Charge (2)",
     },
     "S-0122": {
       fullName: "Naw Mee Mee / Mee Mee",
-      department: "Central Pharmacy",
+      department: "Pharmacy OPD and Central Pharmacy",
       position: "Store keeper Coordinator (3)",
     },
     "S-0164": {
       fullName: "Hla Moo",
-      department: "Central Pharmacy",
+      department: "Pharmacy OPD and Central Pharmacy",
       position: "Supervisor (2)",
     },
     "S-0198": {
       fullName: "Ma Hla Hla Win",
-      department: "Central Pharmacy",
+      department: "Pharmacy OPD and Central Pharmacy",
       position: "CHW Staff (1)",
     },
     "S-0337": {
       fullName: "Naw Paw Wah",
-      department: "Central Pharmacy",
+      department: "Pharmacy OPD and Central Pharmacy",
       position: "CHW Staff (1)",
     },
     "S-0535": {
       fullName: "Mue Lar Paung",
-      department: "Central Pharmacy",
+      department: "Pharmacy OPD and Central Pharmacy",
       position: "CHW Staff (1)",
     },
     "S-0537": {
       fullName: "Naw Bu Say / Naw Khu Hsel",
-      department: "Central Pharmacy",
+      department: "Pharmacy OPD and Central Pharmacy",
       position: "Medic (1)",
     },
     "S-0581": {
       fullName: "Saw Htun Zaw Oo",
-      department: "Central Pharmacy",
+      department: "Pharmacy OPD and Central Pharmacy",
       position: "CHW Staff (2)",
     },
     "S-0627": {
       fullName: "Thein Zaw Win",
-      department: "Central Pharmacy",
+      department: "Pharmacy OPD and Central Pharmacy",
       position: "Staff (1)",
     },
     "S-0799": {
       fullName: "Naw Mu Kha",
-      department: "Central Pharmacy",
+      department: "Pharmacy OPD and Central Pharmacy",
       position: "MCH/CHW Staff (1)",
     },
     "S-0812": {
       fullName: "Naw Paw lah Thoo",
-      department: "Central Pharmacy",
+      department: "Pharmacy OPD and Central Pharmacy",
       position: "Pharmacist Staff (1)",
     },
     "S-0819": {
       fullName: "Naw Tha Lay Paw / Siripon",
-      department: "Central Pharmacy",
+      department: "Pharmacy OPD and Central Pharmacy",
       position: "Pharmacist Staff (2)",
     },
     "S-1120": {
       fullName: "Saw Kyaw Pwel Moo",
-      department: "Central Pharmacy",
+      department: "Pharamcy IPD",
       position: "Health Worker (4)",
     },
     "S-0738": {
@@ -1380,12 +1386,12 @@ function AddStaff() {
     },
     "S-1072": {
       fullName: "Naw Merry Linn",
-      department: "SRHR Program",
+      department: "Community Health and SRHR Program",
       position: "Staff (4)",
     },
     "S-0640": {
       fullName: "Saw Naing Oo",
-      department: "Disease Prevention Health Promotion (DPHP)",
+      department: "Community Health",
       position: "DPHP Coordinator (2)",
     },
     "S-0248": {
@@ -1564,8 +1570,8 @@ function AddStaff() {
       position: "School Security staff (3)",
     },
     "S-0299": {
-      fullName: "ManThan Than Lay",
-      department: "CDC - Adminstration of Education",
+      fullName: "Man Than Than Lay",
+      department: "CDC - Admin",
       position: "Operations Manager (1)",
     },
     "S-0388": {
@@ -1735,7 +1741,7 @@ function AddStaff() {
     },
     "S-0506": {
       fullName: "Mr. Sunil Martin",
-      department: "CDC-High Teacher",
+      department: "CDC - High Teachers",
       position: "Teacher",
     },
     "S-0682": {
@@ -1905,7 +1911,7 @@ function AddStaff() {
     },
     "S-0231": {
       fullName: "Nway Nway Oo",
-      department: "Protection",
+      department: "Child Protection",
       position: "Deputy Director of Protection",
     },
     "S-0203": {
@@ -1995,17 +2001,17 @@ function AddStaff() {
     },
     "S-0197": {
       fullName: "Naw Million / Mrs. Malia Chankiadsakun",
-      department: "SGBV",
+      department: "Child Protection",
       position: "Women & Child Protection case management Coordinator (3)",
     },
     "S-0918": {
       fullName: "Shine Yati Ko",
-      department: "SGBV",
+      department: "Child Protection",
       position: "Women & Child Case Management Assistance Staff (1)",
     },
     "S-0010": {
       fullName: "Eh Nar Moo / Aenamu Ruechaiwichit",
-      department: "Operations",
+      department: "Finance",
       position: "Deputy Director",
     },
     "S-0412": {
@@ -2235,7 +2241,7 @@ function AddStaff() {
     },
     "S-0652": {
       fullName: "Maung Chaw",
-      department: "taff Advance Course (Bachelor of Nursing)",
+      department: "Staff Advance Course (Bachelor of Nursing)",
       position: "Medic (1)",
     },
     "S-0780": {
@@ -2465,7 +2471,7 @@ function AddStaff() {
     },
     "S-0046": {
       fullName: "Tin Mg Win",
-      department: "841 Facilities",
+      department: "Facilities",
       position: "Supervisor (2)",
     },
     "S-0513": {
@@ -2560,7 +2566,7 @@ function AddStaff() {
     },
     "S-0053": {
       fullName: "Daw Eh Kone",
-      department: "841 Water & Sanitation",
+      department: "Water & Sanitation",
       position: "Staff (3)",
     },
     "S-0054": {
@@ -2580,7 +2586,7 @@ function AddStaff() {
     },
     "S-0941": {
       fullName: "San San Win / Mu Dah Bu",
-      department: "841 Water & Sanitation",
+      department: "Water & Sanitation",
       position: "Staff (5)",
     },
     "S-0961": {
@@ -2590,12 +2596,12 @@ function AddStaff() {
     },
     "S-1063": {
       fullName: "Mg Naing Win",
-      department: " Water & Sanitation",
+      department: "Water & Sanitation",
       position: "Cleaner Staff (5)",
     },
     "S-1119": {
       fullName: "Saw Thein Tun Maung",
-      department: " Water & Sanitation",
+      department: "Water & Sanitation",
       position: "Staff (5)",
     },
     "S-0051": {
@@ -2710,7 +2716,7 @@ function AddStaff() {
     },
     "S-1144": {
       fullName: "Dr. Khin Thida Saw",
-      department: "Emergency Care Unit (ECU)",
+      department: "ECU",
       position: "Emergency Care Unit (ECU) Volunteer",
     },
     "V-0001": {
@@ -2770,12 +2776,12 @@ function AddStaff() {
     },
     "V-0012": {
       fullName: "Daripaw",
-      department: "BBHS",
+      department: "Burma Based Health Services",
       position: "Volunteer",
     },
     "V-0013": {
       fullName: "Nan Sa Nay Ma",
-      department: "BBHS",
+      department: "Burma Based Health Services",
       position: "Volunteer",
     },
     "V-0014": {
@@ -3038,6 +3044,14 @@ function AddStaff() {
           />
         </label>
 
+        <label>
+          Remark:
+          <select name="remark" value={formData.remark} onChange={handleChange}>
+            <option value="">Select Remark</option>
+            <option>Resign</option>
+          </select>
+        </label>
+
         <button type="submit" className={ProfileCss.submitBtn}>
           {editId ? "Update" : "Submit"}
         </button>
@@ -3060,6 +3074,7 @@ function AddStaff() {
             <th>Gender</th>
             <th>Position</th>
             <th>Department</th>
+            <th>Remark</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -3072,6 +3087,7 @@ function AddStaff() {
               <td>{item.gender}</td>
               <td>{item.position}</td>
               <td>{item.department}</td>
+              <td>{item.remark}</td>
               <td>
                 <button
                   onClick={() => handleEdit(item.id)}

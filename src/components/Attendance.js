@@ -30,6 +30,8 @@ function Attendance() {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+  const daysInMonth = 30;
+  const monthDays = Array.from({ length: daysInMonth }, (_, i) => `${i + 1}`);
 
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [selectedStartedDate, setSelectedStartedDate] = useState("");
@@ -170,6 +172,11 @@ function Attendance() {
     fetchData();
   }, []);
 
+  // Create an array of all June date keys like: "2025-06-01", ..., "2025-06-30"
+  const juneDates = Array.from({ length: daysInMonth }, (_, i) => {
+    return `2025-06-${String(i + 1).padStart(2, "0")}`;
+  });
+
   const filteredData = data.filter((item) => {
     const name = item.name?.toLowerCase() || "";
     const department = item.department?.toLowerCase() || "";
@@ -207,59 +214,72 @@ function Attendance() {
   );
 
   const downloadPDF = () => {
-    const doc = new jsPDF({ orientation: "landscape" });
-    doc.setFontSize(18);
-    doc.setTextColor(40);
-    doc.text("Mae Tao Clinic - Staff Timesheet Report", 14, 15);
+    const doc = new jsPDF("landscape");
+    doc.setFontSize(14);
+    doc.text("Mae Tao Clinic - Monthly Timesheet Report (June 2025)", 40, 30);
 
-    const tableColumn = ["Number", ...Object.keys(initialForm)];
-    const tableRows = filteredData.map((row, index) => [
-      index + 1,
-      ...Object.keys(initialForm).map((key) => {
-        const value = row[key] || "";
-        // Check if the value is a date string
-        if (typeof value === "string" && value.includes("T")) {
-          return value.split("T")[0]; // Only return the date part
-        }
-        return value;
-      }),
-    ]);
+    // Step 1: Generate dates from 1st to 30th June
+    const daysInMonth = 30;
+    const monthDays = Array.from({ length: daysInMonth }, (_, i) =>
+      String(i + 1)
+    );
 
+    // Step 2: Setup table headers
+    const tableColumns = [
+      "No",
+      "Name",
+      "Code",
+      "Dept",
+      ...monthDays,
+      "Work Days",
+      "Leave Days",
+    ];
+
+    // Step 3: Prepare each row — one row per staff member
+    const tableRows = filteredData.map((staff, index) => {
+      let workDays = 0;
+      let leaveDays = 0;
+
+      const row = [index + 1, staff.name, staff.staffCode, staff.department];
+
+      for (let i = 1; i <= 30; i++) {
+        const dayStr = `2025-06-${String(i).padStart(2, "0")}`;
+        const status = staff.dailyStatus?.[dayStr] || ""; // fallback to empty
+
+        // Count working & leave days
+        if (["D", "N", "W"].includes(status)) workDays++;
+        if (["L", "SL", "HL"].includes(status)) leaveDays++;
+
+        row.push(status); // Add daily status to the row
+      }
+
+      // Add totals at the end
+      row.push(workDays);
+      row.push(leaveDays);
+
+      return row;
+    });
+
+    // Step 4: Render the table using autoTable
     autoTable(doc, {
-      startY: 25,
-      head: [tableColumn],
+      startY: 40,
+      head: [tableColumns],
       body: tableRows,
       theme: "grid",
       headStyles: {
-        fillColor: [128, 128, 128],
-        textColor: [255, 255, 255],
-        fontStyle: "bold",
+        fillColor: [30, 115, 190],
+        textColor: 255,
+        halign: "center",
+        fontSize: 10,
       },
       bodyStyles: {
-        textColor: [0, 0, 0],
-        lineColor: [200, 200, 200],
-        lineWidth: 0.5,
+        fontSize: 9,
+        halign: "center",
       },
       styles: {
-        fontSize: 9,
-        cellPadding: 2,
         overflow: "linebreak",
-        columnWidth: "wrap", // Required when using columnStyles
-      },
-
-      columnStyles: {
-        0: { cellWidth: 15 }, // Serial number column
-
-        ...Object.keys(initialForm).reduce((acc, key, i) => {
-          acc[i + 1] = {
-            cellWidth: ["name", "department"].includes(key) ? 23 : 18,
-          };
-          return acc;
-        }, {}),
-      },
-
-      alternateRowStyles: {
-        fillColor: [245, 245, 245],
+        cellPadding: 2,
+        fontSize: 8,
       },
       didDrawPage: function (data) {
         const pageCount = doc.internal.getNumberOfPages();
@@ -268,13 +288,14 @@ function Attendance() {
           `Page ${
             doc.internal.getCurrentPageInfo().pageNumber
           } of ${pageCount}`,
-          doc.internal.pageSize.getWidth() - 40,
+          doc.internal.pageSize.getWidth() - 60,
           doc.internal.pageSize.getHeight() - 10
         );
       },
     });
 
-    doc.save("Timesheet_report.pdf");
+    // Step 5: Save as PDF
+    doc.save("Timesheet_June2025.pdf");
   };
 
   return (

@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import ProfileCss from "../css/staff.module.css";
+import Image from "../image/maeteo.png";
 
 function Login({ setIsLoggedIn }) {
   const [email, setEmail] = useState("");
@@ -59,6 +60,7 @@ function Login({ setIsLoggedIn }) {
   return (
     <div className={ProfileCss.loginMain}>
       <div className={ProfileCss.Main}>
+        <img src={Image} alt="metao" className={ProfileCss.ImageLogin} />
         <div className={ProfileCss.MianCont}>Login</div>
 
         {error && <p style={{ color: "#f70d3f" }}>{error}</p>}

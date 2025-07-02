@@ -17,6 +17,7 @@ const StaffInfo = () => {
   const [openGroup, setOpenGroup] = useState(null);
   const [selectedDepartment, setSelectedDepartment] = useState(null);
   const [payrollData, setPayrollData] = useState([]);
+  const [staffCounts, setStaffCounts] = useState([]);
 
   const toggleGroup = (groupName) => {
     setOpenGroup(openGroup === groupName ? null : groupName);
@@ -47,35 +48,70 @@ const StaffInfo = () => {
   const departmentGroups = {
     "Admin Units": [
       "Finance",
-      "Security/Public Relation/Kitchen",
+      "Security and Patients Relation",
       "Administration",
-      "HR",
-      "OD",
-      "Organizational Development",
-      "Health Adminstration Office",
-      "HIS/Registration",
-      "BBHS",
+      "Human Resources",
+      "Organisational Development",
+      "Health Services",
+      "HIS and Registration",
+      "Burma Based Health Services",
       "Training",
-      "CDC",
+      "Referral",
+      "Health Training and Community Health",
+      "Community Health",
+      "Community Health and SRHR Program",
+      "School Health",
+      "Training Office",
+      "Bachelor of Nursing",
+      "Library",
+      "Education",
+      "CDC - Admin",
+      "CDC - High Teachers",
+      "CDC - Middle Teachers",
+      "CDC - Primary Teachers",
+      "Non-Formal Education (NFE)",
+      "CDC - Early Childhood Development (ECD)",
+      "CDC - Education Quality Frame Work (EQF)",
+      "CDC - Community Development / Protection",
+      "GED Program",
+      "Child Protection",
+      "Birth Registration",
+      "Daycare Centre",
+      "Boarding House (Migrant)",
+      "CDC Boarding House IDP",
+      "Logistics",
+      "Operations",
+      "Vehicle",
+      "Staff Advance Course (Bachelor of Nursing)",
+      "Staff Advance Course (EmONC)",
+      "Staff Advance Course (Medic Group 3)",
+      "Community Operations",
+      "Fundraising",
+      "Kitchen",
+      "Facilities",
+      "Water & Sanitation",
+      "Sewing Center",
+      "Staff Advance",
     ],
     "OPD Units": [
-      "Adult OPD",
-      "Child OPD/Immunization",
+      "Adult-OPD",
+      "Child OPD & Immunization",
       "RH OPD",
-      "Eye",
+      "Eye Program",
       "Dental",
-      "VCT/Blood Bank",
+      "VCT, Blood Bank Department (HIV Program)",
       "Pharmacy OPD/Main Cental",
-      "Physio/TCM",
+      "Physiotherapy & TCM Department",
       "IPU",
+      "Surgical OPD",
+      "Pharmacy OPD and Central Pharmacy",
     ],
     "IPD Units": [
       "RH IPD",
-      "Child IPD",
-      "Adult IPD",
+      "Adult & Child IPD",
       "Surgical IPD",
       "Lab",
-      "Nursing Aid",
+      "Nursing Program",
       "ECU",
     ],
   };
@@ -95,6 +131,17 @@ const StaffInfo = () => {
       .get("http://localhost:8000/api/department-count")
       .then((res) => setDepartments(res.data))
       .catch((err) => console.error("Failed to fetch department counts", err));
+  }, []);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:8000/api/department-gender")
+      .then((res) => {
+        setStaffCounts(res.data);
+      })
+      .catch((err) => {
+        console.error("Error fetching department-gender data:", err);
+      });
   }, []);
 
   const filteredDepartments =
@@ -226,6 +273,7 @@ const StaffInfo = () => {
                 <th>Total Staff</th>
               </tr>
             </thead>
+
             <tbody>
               {filteredDepartments.map((item, index) => (
                 <tr key={item.department}>
@@ -237,6 +285,31 @@ const StaffInfo = () => {
             </tbody>
           </table>
         )}
+      </div>
+      <div>
+        <h2 className={ProfileCss.SectionTitle}>
+          Staff Count by Department and Gender
+        </h2>
+        <table className={ProfileCss.AttendanceTable}>
+          <thead>
+            <tr>
+              <th>No.</th>
+              <th>Department</th>
+              <th>Gender</th>
+              <th>Total Staff</th>
+            </tr>
+          </thead>
+          <tbody>
+            {staffCounts.map((item, index) => (
+              <tr key={`${item.department}-${item.gender}`}>
+                <td>{index + 1}</td>
+                <td>{item.department}</td>
+                <td>{item.gender}</td>
+                <td>{item.total}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );

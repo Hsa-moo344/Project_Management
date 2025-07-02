@@ -8,6 +8,13 @@ body {
   background-color: 1px solid black;
 }
 
+.ImageLogin {
+  width: 100px;
+  height: 70px;
+  color: white;
+  margin-top: 15px;
+}
+
 .Main {
   display: flex;
   flex-direction: column;
@@ -48,7 +55,7 @@ body {
 .MianCont {
   font-size: 20px;
   font-weight: 600;
-  padding-bottom: 30px;
+  padding-bottom: 20px;
 }
 /* App js */
 .AppMain {
@@ -90,75 +97,69 @@ body {
 }
 
 /* home page */
-.MainPage {
-  color: Blue;
-}
 .Dropdown {
-  position: absolute;
+  position: relative;
   display: inline-block;
+  margin: 0px;
+  padding: 0px;
 }
-.Dropdown button {
-  padding: 12px 18px;
-}
+
+/* Main button */
 .dropbtl {
-  background-color: #608af5;
+  background-color: #1e73be;
   color: white;
-  padding: 16px;
+  padding: 12px 20px;
   font-size: 16px;
   border: none;
-  border-radius: 10px;
-}
-
-.BtlContent {
-  display: none;
-  position: absolute;
-  background-color: #f1f1f1;
-  min-width: 160px;
-  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-  z-index: 1;
-}
-
-.BtlContent a {
-  color: black;
-  padding: 12px 16px;
-  text-decoration: none;
-  display: block;
-}
-
-.BtlContent a:hover {
-  background-color: #ddd;
-}
-
-.Dropdown:hover .BtlContent {
-  display: block;
-}
-
-.Dropdown:hover .dropbtl {
-  background-color: #3e8e41;
-}
-
-.navBtl {
-  /* display: flex;
-  padding: 10px 20px; */
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  padding: 8px;
-  justify-content: space-between;
-}
-.addButton {
-  border-radius: 15px;
-  background-color: #9fb7f4;
-  color: #575555;
-  padding: 10px 16px;
-  border: none;
-  border-radius: 6px;
   cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s ease;
+  border-radius: 4px;
 }
+
+/* Dropdown content (hidden by default) */
+.BtlContent {
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 250px;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+  margin-top: 5px;
+  padding: 10px 0;
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform 0.3s ease-in-out;
+  z-index: 100;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* Show the dropdown */
+.show {
+  transform: scaleY(1);
+}
+
+/* Container for buttons */
+.navBtl {
+  display: flex;
+  flex-direction: column;
+  padding: 0 10px;
+}
+
+/* Each dropdown button */
+.addButton {
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 10px 0;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+  color: #000;
+  transition: background 0.2s ease;
+}
+
+/* Hover effect */
 .addButton:hover {
-  background-color: #3e8e41;
+  background-color: #f0f0f0;
+  color: #1e73be;
 }
 
 /* Attendance page */
@@ -1670,4 +1671,145 @@ h1 {
   transform: scale(2); /* Zoom in 2x */
   z-index: 10;
   position: relative;
+}
+
+/* Staff Contact Page */
+.MainAttendance {
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h2,
+h3 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.searchBox {
+  display: block;
+  margin: 0 auto 20px auto;
+  padding: 8px 12px;
+  width: 300px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+}
+
+.Attend {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  margin-bottom: 20px;
+}
+
+.Attend label {
+  display: flex;
+  flex-direction: column;
+  font-size: 14px;
+  color: #555;
+}
+
+.Attend input,
+.Attend select {
+  padding: 8px;
+  margin-top: 4px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.submitBtn {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.submitBtn:disabled {
+  background-color: #aaa;
+  cursor: not-allowed;
+}
+
+.submitBtn:hover:not(:disabled) {
+  background-color: #218838;
+}
+
+.tableContainer {
+  overflow-x: auto;
+  margin-top: 20px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+}
+
+.table th,
+.table td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: left;
+  font-size: 14px;
+}
+
+.table th {
+  background-color: #007bff;
+  color: white;
+}
+
+.editPayroll {
+  background-color: #ffc107;
+  color: black;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 6px;
+}
+
+.editPayroll:hover {
+  background-color: #e0a800;
+}
+
+.deletePayroll {
+  background-color: #dc3545;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.deletePayroll:hover {
+  background-color: #c82333;
+}
+
+.pagination {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.pageBtn {
+  margin: 0 4px;
+  padding: 6px 10px;
+  font-size: 14px;
+  background-color: #e2e6ea;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.activePage {
+  background-color: #007bff;
+  color: white;
 }

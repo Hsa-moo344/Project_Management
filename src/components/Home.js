@@ -1,10 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ProfileCss from "../css/staff.module.css";
 
 function Home() {
   const navigate = useNavigate();
   const someCondition = true;
+  const [isOpen, setIsOpen] = useState(false); // Toggle state
 
   useEffect(() => {
     const isLoggedIn = localStorage.getItem("username");
@@ -15,88 +16,69 @@ function Home() {
 
   return (
     <div>
-      {/* <div className={ProfileCss.Dropdown}>
-        <button className={ProfileCss.dropbtl}>Departments</button>
-        <div className={ProfileCss.BtlContent}>
-          <a href="#">Finance</a>
-          <a href="#">Security/Public Relation</a>
-          <a href="#">Administration/HR</a>
-          <a href="#">Organizational Development</a>
-          <a href="#">HIS/Registration</a>
-          <a href="#">Health Adminstration Office</a>
-          <a href="#">Eye</a>
-          <a href="#">Adult OPD</a>
-          <a href="#">Dental</a>
-          <a href="#">Child OPD/Immunization</a>
-          <a href="#">RH OPD</a>
-          <a href="#">VCT/Blood Bank</a>
-          <a href="#">Pharmacy OPD/Main Cental</a>
-          <a href="#">Physio/TCM</a>
-          <a href="#">RH IPD</a>
-          <a href="#">Child IPD</a>
-          <a href="#">Adult IPD</a>
-          <a href="#">Surgical IPD</a>
+      <div className={ProfileCss.Dropdown}>
+        <button
+          className={ProfileCss.dropbtl}
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          Departments ▼
+        </button>
+
+        <div
+          className={`${ProfileCss.BtlContent} ${
+            isOpen ? ProfileCss.show : ""
+          }`}
+        >
+          <div className={ProfileCss.navBtl}>
+            <button
+              className={ProfileCss.addButton}
+              onClick={() => navigate("/attendance")}
+            >
+              Staff Attendance/ Staff Timesheet
+            </button>
+            <button
+              className={ProfileCss.addButton}
+              onClick={() => navigate("/individual")}
+            >
+              Individual Timesheet
+            </button>
+            <button
+              className={ProfileCss.addButton}
+              onClick={() => navigate("/payroll")}
+            >
+              Staff Payroll
+            </button>
+            <button
+              className={ProfileCss.addButton}
+              onClick={() => navigate("/add-staff")}
+            >
+              + Add Staff Form
+            </button>
+            <button
+              className={ProfileCss.addButton}
+              onClick={() => navigate("/staffdatabase")}
+            >
+              Staff Profile Data Entry Form
+            </button>
+            <button
+              className={ProfileCss.addButton}
+              onClick={() => navigate("/profile")}
+            >
+              Staff Profile Form
+            </button>
+            <button
+              className={ProfileCss.addButton}
+              onClick={() => navigate("/fundraising")}
+            >
+              Fundraising Form
+            </button>
+          </div>
         </div>
-      </div> */}
+      </div>
       <h2 className={ProfileCss.MainPage}>
         Welcome to Staff Management Main Page
       </h2>
-
-      <div className={ProfileCss.navBtl}>
-        <button
-          className={ProfileCss.addButton}
-          onClick={() => {
-            if (someCondition) {
-              navigate("/attendance");
-            } else {
-              navigate("/Dashboard");
-            }
-          }}
-        >
-          Staff Attendance/Timesheet
-        </button>
-        <button
-          className={ProfileCss.addButton}
-          onClick={() => navigate("/individual")}
-        >
-          Individual Timesheet
-        </button>
-        <button
-          className={ProfileCss.addButton}
-          onClick={() => navigate("/payroll")}
-        >
-          Staff Payroll
-        </button>
-
-        <button
-          className={ProfileCss.addButton}
-          onClick={() => navigate("/add-staff")}
-        >
-          + Add Staff Table
-        </button>
-
-        <button
-          className={ProfileCss.addButton}
-          onClick={() => navigate("/staffdatabase")}
-        >
-          Staff Profile Database
-        </button>
-
-        <button
-          className={ProfileCss.addButton}
-          onClick={() => navigate("/profile")}
-        >
-          Staff Profile
-        </button>
-        <button
-          className={ProfileCss.addButton}
-          onClick={() => navigate("/fundraising")}
-        >
-          Fundraising
-        </button>
-      </div>
       <div>
-        {/* <h2>Staff Management Main Board</h2> */}
         <p>
           Mae Tao Clinic (MTC) is a community-based organization that has served
           the migrant community and internally displaced populations for more

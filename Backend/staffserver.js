@@ -951,6 +951,24 @@ app.get("/api/department-count", (req, res) => {
   });
 });
 
+// Staff Information page count by department and gender
+
+app.get("/api/department-gender", (req, res) => {
+  const sql = `
+    SELECT department, gender, COUNT(*) AS total
+    FROM tbl_staff
+    GROUP BY department, gender
+    ORDER BY department, gender;
+  `;
+  pool.query(sql, (err, results) => {
+    if (err) {
+      console.error("Error fetching staff:", err);
+      return res.status(500).json({ error: "Database error" });
+    }
+    res.json(results);
+  });
+});
+
 // Department banding
 app.get("/api/department-banding", (req, res) => {
   const sql = `
@@ -1018,6 +1036,63 @@ WHERE startLeaveDay IS NOT NULL
     res.json(results);
   });
 });
+
+// Staff Contact Information
+// ✅ GET all staff
+app.get("/api/staffcontactfunction", (req, res) => {
+  const sql = `
+    SELECT 
+      c.id,
+      c.staffCode,
+      s.fullName,
+      c.phoneNumber
+    FROM tbl_contact c
+    JOIN tbl_staff s ON c.staffCode = s.staffCode
+    WHERE c.staffCode = s.staffCode;
+  `;
+  pool.query(sql, (err, results) => {
+    if (err) return res.status(500).send("Failed to fetch staff contacts");
+    res.json(results);
+  });
+});
+
+// ✅ Insert a new staff contact
+app.post("/api/staffcontactfunction", (req, res) => {
+  const { staffCode, fullName, phoneNumber } = req.body;
+  const sql =
+    "INSERT INTO tbl_contact (staffCode, fullName, phoneNumber) VALUES (?, ?, ?)";
+  pool.query(sql, [staffCode, fullName, phoneNumber], (err) => {
+    if (err) {
+      if (err.code === "ER_DUP_ENTRY") {
+        return res.status(400).send("Staff Code already exists");
+      }
+      return res.status(500).send("Failed to insert staff contact");
+    }
+    res.send("Staff contact inserted successfully");
+  });
+});
+
+// ✅ Update a staff contact
+app.put("/api/staffcontactfunction/:id", (req, res) => {
+  const { id } = req.params;
+  const { staffCode, fullName, phoneNumber } = req.body;
+  const sql =
+    "UPDATE tbl_contact SET staffCode = ?, fullName = ?, phoneNumber = ? WHERE id = ?";
+  pool.query(sql, [staffCode, fullName, phoneNumber, id], (err) => {
+    if (err) return res.status(500).send("Failed to update staff contact");
+    res.send("Staff contact updated successfully");
+  });
+});
+// // ✅ Delete a staff contact
+app.delete("/api/staffcontactfunction/:id", (req, res) => {
+  const { id } = req.params;
+  const sql = "DELETE FROM tbl_contact WHERE id = ?";
+  pool.query(sql, [id], (err) => {
+    if (err) return res.status(500).send("Failed to delete staff contact");
+    res.send("Staff contact deleted successfully");
+  });
+});
+
 // app.get("/api/attendance", (req, res) => {
 //   pool.query(
 //     "SELECT department, COUNT(id) AS total_staff FROM tbl_attendance GROUP BY department",
