@@ -37,7 +37,7 @@ function Attendance() {
   const [selectedStartedDate, setSelectedStartedDate] = useState("");
   const [selectedEndDate, setSelectedEndDate] = useState("");
   const [year, setYear] = useState("2025");
-  const [month, setMonth] = useState("06");
+  const [month, setMonth] = useState("07");
 
   const getLastDayOfMonth = (date) => {
     const d = new Date(date);
@@ -174,11 +174,6 @@ function Attendance() {
     fetchData();
   }, []);
 
-  // Create an array of all June date keys like: "2025-06-01", ..., "2025-06-30"
-  const juneDates = Array.from({ length: daysInMonth }, (_, i) => {
-    return `2025-06-${String(i + 1).padStart(2, "0")}`;
-  });
-
   const filteredData = data.filter((item) => {
     const name = item.name?.toLowerCase() || "";
     const department = item.department?.toLowerCase() || "";
@@ -218,14 +213,30 @@ function Attendance() {
 
   const downloadPDF = () => {
     const doc = new jsPDF("landscape");
+
+    // Convert numeric month to full month name
+    const monthName = new Date(`${year}-${month}-01`).toLocaleString(
+      "default",
+      {
+        month: "long",
+      }
+    );
+
+    // Start and end date for selected month
+    const startDate = new Date(`${year}-${month}-01`);
+    const endDate = new Date(year, parseInt(month), 0); // last day of month
+
+    const daysInMonth = endDate.getDate(); // e.g. 31
+
+    // PDF Title
     doc.setFontSize(14);
     doc.text(
-      `Mae Tao Clinic - Monthly Timesheet Report (${year}-${month})`,
+      `Mae Tao Clinic - Monthly Timesheet Report (${monthName} ${year})`,
       40,
       30
     );
 
-    const daysInMonth = new Date(year, parseInt(month), 0).getDate(); // get days in selected month
+    // Generate date numbers 1 to 30/31
     const monthDays = Array.from({ length: daysInMonth }, (_, i) =>
       String(i + 1)
     );
@@ -241,13 +252,17 @@ function Attendance() {
     ];
 
     const tableRows = [];
-
-    // ✅ Group data by staffCode
     const groupedByStaff = {};
 
+    // Group data
     data.forEach((record) => {
-      const dateStr = record.date?.slice(0, 10); // format: YYYY-MM-DD
-      if (!dateStr || !dateStr.startsWith(`${year}-${month}`)) return;
+      const dateStr = record.date?.slice(0, 10); // YYYY-MM-DD
+      const recordDate = new Date(dateStr);
+
+      // ✅ Filter only data in selected month
+      if (!dateStr || recordDate < startDate || recordDate > endDate) {
+        return;
+      }
 
       const code = record.staffCode;
 
@@ -263,29 +278,27 @@ function Attendance() {
       const type = record.type?.toLowerCase() || "";
       let shortStatus = "";
 
-      // ✅ Normalize type to W, L, or DO
       if (type.includes("work")) shortStatus = "W";
       else if (type.includes("leave")) shortStatus = "L";
       else if (type.includes("day off") || type === "do") shortStatus = "DO";
-      else shortStatus = "";
 
       groupedByStaff[code].dailyStatus[dateStr] = shortStatus;
     });
 
-    // ✅ Build table rows per staff
+    // Build table rows
     Object.values(groupedByStaff).forEach((staff, index) => {
       let workDays = 0;
       let leaveDays = 0;
       const row = [index + 1, staff.name, staff.staffCode, staff.department];
 
       for (let i = 1; i <= daysInMonth; i++) {
-        const dayStr = `${year}-${month}-${String(i).padStart(2, "0")}`;
-        const status = staff.dailyStatus[dayStr] || "";
+        const dateStr = `${year}-${month}-${String(i).padStart(2, "0")}`;
+        const status = staff.dailyStatus[dateStr] || "";
 
         if (["W", "DO"].includes(status)) workDays++;
         if (status === "L") leaveDays++;
 
-        row.push(status); // Push W, L, DO, or empty
+        row.push(status);
       }
 
       row.push(workDays);
@@ -293,7 +306,7 @@ function Attendance() {
       tableRows.push(row);
     });
 
-    // ✅ Draw the table
+    // Render table
     autoTable(doc, {
       startY: 40,
       head: [tableColumns],
@@ -327,8 +340,8 @@ function Attendance() {
       },
     });
 
-    // ✅ Save as: Timesheet_2025-06.pdf
-    doc.save(`Timesheet_${year}-${month}.pdf`);
+    // ✅ Save file with month name
+    doc.save(`Timesheet_${monthName}_${year}.pdf`);
   };
 
   return (
@@ -558,14 +571,6 @@ function Attendance() {
       {/* Staff Attendance Record display */}
       <h3 style={{ textAlign: "center" }}>Staff Timesheet Records List</h3>
       <div className={ProfileCss.AttendanceContainer}>
-        <input
-          type="text"
-          placeholder="Search by name, department or position or leave"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className={ProfileCss.TbnRecord}
-        />
-
         <div className={ProfileCss.FilterContainer}>
           <select
             value={selectedDepartment}
@@ -612,6 +617,19 @@ function Attendance() {
             type="date"
             value={selectedEndDate}
             onChange={(e) => setSelectedEndDate(e.target.value)}
+            className={ProfileCss.TbnRecord}
+          />
+          <input
+            type="year"
+            value={year}
+            onChange={(e) => setYear(e.target.value)}
+            className={ProfileCss.TbnRecord}
+          />
+
+          <input
+            type="month"
+            value={month}
+            onChange={(e) => setMonth(e.target.value.slice(-2))} // Keep only MM part
             className={ProfileCss.TbnRecord}
           />
         </div>

@@ -14,10 +14,6 @@ import {
 const Dashboard = () => {
   const [chartData, setChartData] = useState([]);
   const [chartBand, setChartBand] = useState([]);
-  const [chartLeave, setChartLeave] = useState([]);
-  const [ChartLeavename, setChartLeavename] = useState([]);
-  const [selectedMonth, setSelectedMonth] = useState("");
-  const [selectedYear, setSelectedYear] = useState("");
 
   // Department chart data
   useEffect(() => {
@@ -38,54 +34,34 @@ const Dashboard = () => {
     axios
       .get("http://localhost:8000/api/department-banding")
       .then((response) => {
-        const formatted = response.data.map((item) => ({
-          banding: item.banding_name || "Unknown",
-          total: item.total_staff,
+        // Fixed list of Banding 1 → Banding 13
+        const allBands = Array.from({ length: 13 }, (_, i) => ({
+          banding: `Banding ${i + 1}`,
+          total: 0,
         }));
-        setChartBand(formatted);
+
+        // Map API fields correctly
+        const dbData = response.data.map((item) => ({
+          banding: item.banding || "Unknown", // ✅ backend sends 'banding'
+          total: Number(item.total), // ✅ backend sends 'total'
+        }));
+
+        // Merge fixed list with DB results
+        const merged = allBands.map((band) => {
+          const found = dbData.find(
+            (d) => d.banding.toLowerCase() === band.banding.toLowerCase()
+          );
+          return found ? found : band;
+        });
+
+        // Add Unknown if exists
+        const unknown = dbData.find((d) => d.banding === "Unknown");
+        if (unknown) merged.push(unknown);
+
+        setChartBand(merged);
       })
       .catch((error) => console.error("Banding fetch error:", error));
   }, []);
-
-  // Staff Leave chart data
-  useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/department-leave")
-      .then((response) => {
-        const formatted = response.data.map((item) => ({
-          leave: item.department || "Unknown", // use 'department' instead of 'staff_leave'
-          total: item.totalStaffOnLeave || 0, // match field from backend
-        }));
-        setChartLeave(formatted);
-      })
-      .catch((error) => console.error("Leave fetch error:", error));
-  }, []);
-
-  // Staff Leave by name chart data
-  axios.get("http://localhost:8000/api/department-name").then((response) => {
-    const formatted = response.data.map((item) => ({
-      leavename: item.name || "Unknown",
-      total: item.totalLeaveDaysThisMonth || 0,
-    }));
-    setChartLeavename(formatted);
-  });
-
-  useEffect(() => {
-    const params = {};
-    if (selectedMonth) params.month = selectedMonth;
-    if (selectedYear) params.year = selectedYear;
-
-    axios
-      .get("http://localhost:8000/api/department-leave", { params })
-      .then((response) => {
-        const formatted = response.data.map((item) => ({
-          leave: item.department || "Unknown",
-          total: item.totalStaffOnLeave || 0,
-        }));
-        setChartLeave(formatted);
-      })
-      .catch((error) => console.error("Leave fetch error:", error));
-  }, [selectedMonth, selectedYear]);
 
   return (
     <div
@@ -127,72 +103,10 @@ const Dashboard = () => {
               <YAxis allowDecimals={false} />
               <Tooltip />
               <Legend />
-              <Bar dataKey="total" fill="#82ca9d" name="Banding" />
+              <Bar dataKey="total" fill="#82ca9d" name="Total Staff" />
             </BarChart>
           </ResponsiveContainer>
         </div>
-      </div>
-
-      {/* Bottom Row: Leave Charts */}
-      <div style={{ display: "flex", gap: "30px" }}>
-        {/* Leave by Department */}
-        <div style={{ flex: 1 }}>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart
-              data={chartLeave}
-              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="leave" />
-              <YAxis allowDecimals={false} />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="total" fill="#ffc658" name="Leave by Department" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Leave by Name */}
-        <div style={{ flex: 1 }}>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart
-              data={ChartLeavename}
-              margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-            >
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="leavename" />
-              <YAxis allowDecimals={false} />
-              <Tooltip />
-              <Legend />
-              <Bar dataKey="total" fill="#ff8042" name="Leave by Name" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-      <div style={{ display: "flex", gap: "20px", marginBottom: "20px" }}>
-        <select
-          value={selectedMonth}
-          onChange={(e) => setSelectedMonth(e.target.value)}
-        >
-          <option value="">All Months</option>
-          {[...Array(12)].map((_, i) => (
-            <option key={i + 1} value={String(i + 1).padStart(2, "0")}>
-              {new Date(0, i).toLocaleString("default", { month: "long" })}
-            </option>
-          ))}
-        </select>
-
-        <select
-          value={selectedYear}
-          onChange={(e) => setSelectedYear(e.target.value)}
-        >
-          <option value="">All Years</option>
-          {[2024, 2025].map((year) => (
-            <option key={year} value={year}>
-              {year}
-            </option>
-          ))}
-        </select>
       </div>
     </div>
   );
