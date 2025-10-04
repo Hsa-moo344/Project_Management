@@ -36,8 +36,11 @@ function Attendance() {
   const [selectedDepartment, setSelectedDepartment] = useState("");
   const [selectedStartedDate, setSelectedStartedDate] = useState("");
   const [selectedEndDate, setSelectedEndDate] = useState("");
-  const [year, setYear] = useState("2025");
-  const [month, setMonth] = useState("07");
+
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [month, setMonth] = useState(
+    `${new Date().getMonth() + 1}`.padStart(2, "0")
+  );
 
   const getLastDayOfMonth = (date) => {
     const d = new Date(date);
@@ -67,7 +70,7 @@ function Attendance() {
 
       let diff = end - start;
       if (diff < 0) {
-        end.setDate(end.getDate() + 1); // Crossed midnight
+        end.setDate(end.getDate() + 1); // crossed midnight
         diff = end - start;
       }
 
@@ -177,8 +180,6 @@ function Attendance() {
   const filteredData = data.filter((item) => {
     const name = item.name?.toLowerCase() || "";
     const department = item.department?.toLowerCase() || "";
-
-    // Convert number to string, no toLowerCase needed
     const leave =
       item.totalLeaveDaysThisMonth != null
         ? item.totalLeaveDaysThisMonth.toString()
@@ -191,7 +192,7 @@ function Attendance() {
     const matchesSearch =
       name.includes(search) ||
       department.includes(search) ||
-      leave.includes(search) || // now safe because leave is string
+      leave.includes(search) ||
       position.includes(search) ||
       date.includes(search);
 
@@ -205,8 +206,9 @@ function Attendance() {
     return matchesSearch && matchesDepartment && matchesDate;
   });
 
+  // ✅ pagination logic
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-  const displayedData = filteredData?.slice(
+  const displayedData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -214,7 +216,6 @@ function Attendance() {
   const downloadPDF = () => {
     const doc = new jsPDF("landscape");
 
-    // Convert numeric month to full month name
     const monthName = new Date(`${year}-${month}-01`).toLocaleString(
       "default",
       {
@@ -222,13 +223,11 @@ function Attendance() {
       }
     );
 
-    // Start and end date for selected month
     const startDate = new Date(`${year}-${month}-01`);
     const endDate = new Date(year, parseInt(month), 0); // last day of month
+    const daysInMonth = endDate.getDate();
 
-    const daysInMonth = endDate.getDate(); // e.g. 31
-
-    // PDF Title
+    // PDF title
     doc.setFontSize(14);
     doc.text(
       `Mae Tao Clinic - Monthly Timesheet Report (${monthName} ${year})`,
@@ -236,17 +235,13 @@ function Attendance() {
       30
     );
 
-    // Generate date numbers 1 to 30/31
-    const monthDays = Array.from({ length: daysInMonth }, (_, i) =>
-      String(i + 1)
-    );
-
+    // Columns: No, Name, Staff Code, Dept, Day 1..DayN, Work Days, Leave Days
     const tableColumns = [
       "No",
       "Name",
-      "Code",
-      "Dept",
-      ...monthDays,
+      "Staff Code",
+      "Department",
+      ...Array.from({ length: daysInMonth }, (_, i) => `${i + 1}`),
       "Work Days",
       "Leave Days",
     ];
@@ -254,15 +249,16 @@ function Attendance() {
     const tableRows = [];
     const groupedByStaff = {};
 
-    // Group data
+    // Filter data by month & department
     data.forEach((record) => {
-      const dateStr = record.date?.slice(0, 10); // YYYY-MM-DD
+      const dateStr = record.date?.slice(0, 10);
+      if (!dateStr) return;
+
       const recordDate = new Date(dateStr);
 
-      // ✅ Filter only data in selected month
-      if (!dateStr || recordDate < startDate || recordDate > endDate) {
+      if (recordDate < startDate || recordDate > endDate) return;
+      if (selectedDepartment && record.department !== selectedDepartment)
         return;
-      }
 
       const code = record.staffCode;
 
@@ -277,15 +273,18 @@ function Attendance() {
 
       const type = record.type?.toLowerCase() || "";
       let shortStatus = "";
-
       if (type.includes("work")) shortStatus = "W";
+      else if (type.includes("leave without pay")) shortStatus = "LP";
+      else if (type.includes("maternity")) shortStatus = "ML";
+      else if (type.includes("paternity")) shortStatus = "PL";
       else if (type.includes("leave")) shortStatus = "L";
-      else if (type.includes("day off") || type === "do") shortStatus = "DO";
+      else if (type.includes("absent")) shortStatus = "A";
+      else if (type.includes("day off")) shortStatus = "DO";
+      else if (type.includes("public holiday")) shortStatus = "PH";
 
       groupedByStaff[code].dailyStatus[dateStr] = shortStatus;
     });
 
-    // Build table rows
     Object.values(groupedByStaff).forEach((staff, index) => {
       let workDays = 0;
       let leaveDays = 0;
@@ -294,11 +293,10 @@ function Attendance() {
       for (let i = 1; i <= daysInMonth; i++) {
         const dateStr = `${year}-${month}-${String(i).padStart(2, "0")}`;
         const status = staff.dailyStatus[dateStr] || "";
-
-        if (["W", "DO"].includes(status)) workDays++;
-        if (status === "L") leaveDays++;
-
         row.push(status);
+
+        if (["W", "DO", "PH"].includes(status)) workDays++;
+        if (["L", "LP", "ML", "PL"].includes(status)) leaveDays++;
       }
 
       row.push(workDays);
@@ -306,7 +304,6 @@ function Attendance() {
       tableRows.push(row);
     });
 
-    // Render table
     autoTable(doc, {
       startY: 40,
       head: [tableColumns],
@@ -318,16 +315,9 @@ function Attendance() {
         halign: "center",
         fontSize: 10,
       },
-      bodyStyles: {
-        fontSize: 9,
-        halign: "center",
-      },
-      styles: {
-        overflow: "linebreak",
-        cellPadding: 2,
-        fontSize: 8,
-      },
-      didDrawPage: function (data) {
+      bodyStyles: { fontSize: 9, halign: "center" },
+      styles: { overflow: "linebreak", cellPadding: 2, fontSize: 8 },
+      didDrawPage: () => {
         const pageCount = doc.internal.getNumberOfPages();
         doc.setFontSize(10);
         doc.text(
@@ -340,7 +330,6 @@ function Attendance() {
       },
     });
 
-    // ✅ Save file with month name
     doc.save(`Timesheet_${monthName}_${year}.pdf`);
   };
 
@@ -605,33 +594,47 @@ function Attendance() {
             <option>BBHS</option>
             <option>Training</option>
           </select>
+          <label>
+            Select Month:
+            <select
+              value={month}
+              onChange={(e) => setMonth(e.target.value)}
+              className={ProfileCss.TbnRecord}
+            >
+              {[
+                "01",
+                "02",
+                "03",
+                "04",
+                "05",
+                "06",
+                "07",
+                "08",
+                "09",
+                "10",
+                "11",
+                "12",
+              ].map((m) => (
+                <option key={m} value={m}>
+                  {new Date(0, parseInt(m) - 1).toLocaleString("default", {
+                    month: "short",
+                  })}
+                </option>
+              ))}
+            </select>
+          </label>
 
-          <input
-            type="date"
-            value={selectedStartedDate}
-            onChange={(e) => setSelectedStartedDate(e.target.value)}
-            className={ProfileCss.TbnRecord}
-          />
-
-          <input
-            type="date"
-            value={selectedEndDate}
-            onChange={(e) => setSelectedEndDate(e.target.value)}
-            className={ProfileCss.TbnRecord}
-          />
-          <input
-            type="year"
-            value={year}
-            onChange={(e) => setYear(e.target.value)}
-            className={ProfileCss.TbnRecord}
-          />
-
-          <input
-            type="month"
-            value={month}
-            onChange={(e) => setMonth(e.target.value.slice(-2))} // Keep only MM part
-            className={ProfileCss.TbnRecord}
-          />
+          <label>
+            Select Year:
+            <input
+              type="number"
+              value={year}
+              onChange={(e) => setYear(e.target.value)}
+              min="2000"
+              max="2100"
+              className={ProfileCss.TbnRecord}
+            />
+          </label>
         </div>
 
         {displayedData.length > 0 ? (
