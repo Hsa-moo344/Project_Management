@@ -34,10 +34,19 @@ function Individual() {
   const [selectedStartedDate, setSelectedStartedDate] = useState(""); // Start date
   const [selectedEndDate, setSelectedEndDate] = useState(""); // End date
 
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [month, setMonth] = useState(
+    `${new Date().getMonth() + 1}`.padStart(2, "0")
+  );
+
   const getLastDayOfMonth = (date) => {
     const d = new Date(date);
     return new Date(d.getFullYear(), d.getMonth() + 1, 0);
   };
+  // const getLastDayOfMonth = (date) => {
+  //   const d = new Date(date);
+  //   return new Date(d.getFullYear(), d.getMonth() + 1, 0);
+  // };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -178,70 +187,319 @@ function Individual() {
     currentPage * itemsPerPage
   );
 
+  // const downloadPDF = () => {
+  //   if (filteredData.length === 0) {
+  //     alert("No data available to download!");
+  //     return;
+  //   }
+
+  //   const doc = new jsPDF("landscape");
+  //   const pageWidth = doc.internal.pageSize.getWidth();
+
+  //   // ====== Header Section ======
+  //   doc.setFontSize(14);
+  //   doc.setFont("helvetica", "bold");
+  //   doc.text("Name", 15, 20);
+  //   doc.setFont("helvetica", "normal");
+  //   doc.text(`: ${filteredData[0].name || ""}`, 40, 20);
+
+  //   doc.setFont("helvetica", "bold");
+  //   doc.text("Month", pageWidth / 2 + 30, 20);
+  //   doc.setFont("helvetica", "normal");
+  //   const monthName =
+  //     new Date(filteredData[0].date).toLocaleString("default", {
+  //       month: "long",
+  //     }) || "";
+  //   doc.text(`: ${monthName}`, pageWidth / 2 + 55, 20);
+
+  //   doc.setFont("helvetica", "bold");
+  //   doc.text("Position", 15, 30);
+  //   doc.setFont("helvetica", "normal");
+  //   doc.text(`: ${filteredData[0].position || ""}`, 40, 30);
+
+  //   // ====== Table Columns ======
+  //   const tableColumn = [
+  //     "Day",
+  //     "Date",
+  //     "Attend Type",
+  //     "Start Time",
+  //     "Finish Time",
+  //     "Activities",
+  //   ];
+
+  //   // ====== Table Data from filteredData ======
+  //   const tableRows = filteredData.map((item) => {
+  //     const dateObj = new Date(item.date);
+  //     const dayName = dateObj.toLocaleDateString("en-US", { weekday: "short" });
+  //     const formattedDate = dateObj.toLocaleDateString("en-GB", {
+  //       day: "2-digit",
+  //       month: "short",
+  //       year: "2-digit",
+  //     });
+
+  //     return [
+  //       dayName,
+  //       formattedDate,
+  //       item.type || "",
+  //       item.timeIn || "",
+  //       item.timeOut || "",
+  //       item.activities || "",
+  //     ];
+  //   });
+
+  //   // ====== Table Style ======
+  //   autoTable(doc, {
+  //     startY: 40,
+  //     head: [tableColumn],
+  //     body: tableRows,
+  //     theme: "grid",
+  //     styles: {
+  //       halign: "center",
+  //       valign: "middle",
+  //       fontSize: 10,
+  //       cellPadding: 3,
+  //     },
+  //     headStyles: {
+  //       fillColor: [242, 220, 219], // light pink header
+  //       textColor: [0, 0, 0],
+  //       fontStyle: "bold",
+  //     },
+  //     bodyStyles: {
+  //       fillColor: [255, 255, 204], // light yellow rows
+  //     },
+  //     alternateRowStyles: {
+  //       fillColor: [255, 255, 204],
+  //     },
+  //     columnStyles: {
+  //       0: { cellWidth: 25 }, // Day
+  //       1: { cellWidth: 30 }, // Date
+  //       2: { cellWidth: 30 }, // Attend Type
+  //       3: { cellWidth: 30 }, // Start Time
+  //       4: { cellWidth: 30 }, // Finish Time
+  //       5: { cellWidth: 100 }, // Activities
+  //     },
+  //   });
+
+  //   // ====== Footer ======
+  //   const pageHeight = doc.internal.pageSize.getHeight();
+  //   doc.setFontSize(10);
+  //   doc.text(
+  //     `Generated on: ${new Date().toLocaleDateString()}`,
+  //     15,
+  //     pageHeight - 10
+  //   );
+
+  //   // ====== Save File ======
+  //   const fileName = `${
+  //     filteredData[0].name || "Individual"
+  //   }_Timesheet_${monthName}.pdf`;
+  //   doc.save(fileName);
+  // };
   const downloadPDF = () => {
-    const doc = new jsPDF({ orientation: "landscape" });
-    doc.setFontSize(18);
-    doc.setTextColor(40);
-    doc.text("Mae Tao Clinic - Staff Individual Report", 14, 15);
+    if (filteredData.length === 0) {
+      alert("No data available to download!");
+      return;
+    }
 
-    const tableColumn = ["Number", ...Object.keys(initialForm)];
+    const doc = new jsPDF("landscape");
+    const pageWidth = doc.internal.pageSize.getWidth();
 
-    const tableRows = filteredData.map((row, index) => [
-      index + 1,
-      ...Object.keys(initialForm).map((key) => {
-        const value = row[key] || "";
-        if (typeof value === "string" && value.includes("T")) {
-          return value.split("T")[0];
-        }
-        return value;
-      }),
-    ]);
+    // ====== Header Section ======
+    doc.setFontSize(16);
+    doc.setFont("helvetica", "bold");
+    doc.text("Individual Monthly Timesheet Report", pageWidth / 2, 15, {
+      align: "center",
+    });
 
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("Name", 15, 30);
+    doc.setFont("helvetica", "normal");
+    doc.text(`: ${filteredData[0].name || ""}`, 45, 30);
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Position", 15, 38);
+    doc.setFont("helvetica", "normal");
+    doc.text(`: ${filteredData[0].position || ""}`, 45, 38);
+
+    doc.setFont("helvetica", "bold");
+    doc.text("Month", pageWidth / 2 + 30, 30);
+    doc.setFont("helvetica", "normal");
+    const monthName =
+      new Date(filteredData[0].date).toLocaleString("default", {
+        month: "long",
+        year: "numeric",
+      }) || "";
+    doc.text(`: ${monthName}`, pageWidth / 2 + 55, 30);
+
+    // ====== Table Columns ======
+    const tableColumn = [
+      "No",
+      "Day",
+      "Date",
+      "Attend Type",
+      "Start Time",
+      "Finish Time",
+      "Working Hours",
+      "Activities",
+    ];
+
+    // ====== Table Data ======
+    const tableRows = filteredData.map((item, index) => {
+      const dateObj = new Date(item.date);
+      const dayName = dateObj.toLocaleDateString("en-US", { weekday: "short" });
+      const formattedDate = dateObj.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "2-digit",
+      });
+
+      // Calculate working hours per day
+      let workHours = "";
+      if (item.timeIn && item.timeOut) {
+        const start = new Date(`1970-01-01T${item.timeIn}`);
+        const end = new Date(`1970-01-01T${item.timeOut}`);
+        const diff = (end - start) / (1000 * 60 * 60);
+        workHours = diff > 0 ? diff.toFixed(2) : "";
+      }
+
+      return [
+        index + 1,
+        dayName,
+        formattedDate,
+        item.type || "",
+        item.timeIn || "",
+        item.timeOut || "",
+        workHours,
+        item.activities || "",
+      ];
+    });
+
+    // ====== Table Style ======
     autoTable(doc, {
-      startY: 25,
+      startY: 50,
       head: [tableColumn],
       body: tableRows,
       theme: "grid",
+      styles: {
+        halign: "center",
+        valign: "middle",
+        fontSize: 10,
+        cellPadding: 3,
+      },
       headStyles: {
-        fillColor: [128, 128, 128],
-        textColor: [255, 255, 255],
+        fillColor: [242, 220, 219], // pink header
+        textColor: [0, 0, 0],
         fontStyle: "bold",
       },
       bodyStyles: {
-        textColor: [0, 0, 0],
-        lineColor: [200, 200, 200],
-        lineWidth: 0.3,
+        fillColor: [255, 255, 204], // yellow rows
       },
-      styles: {
-        fontSize: 9,
-        cellPadding: 2,
-        overflow: "linebreak",
-        columnWidth: "wrap",
+      alternateRowStyles: {
+        fillColor: [255, 255, 255],
       },
       columnStyles: {
         0: { cellWidth: 10 },
-        ...Object.keys(initialForm).reduce((acc, key, i) => {
-          acc[i + 1] = {
-            cellWidth: key === "activities" ? 25 : 18,
-          };
-          return acc;
-        }, {}),
-      },
-      alternateRowStyles: { fillColor: [245, 245, 245] },
-      didDrawPage: function () {
-        const pageCount = doc.internal.getNumberOfPages();
-        doc.setFontSize(10);
-        doc.text(
-          `Page ${
-            doc.internal.getCurrentPageInfo().pageNumber
-          } of ${pageCount}`,
-          doc.internal.pageSize.getWidth() - 40,
-          doc.internal.pageSize.getHeight() - 10
-        );
+        1: { cellWidth: 20 },
+        2: { cellWidth: 25 },
+        3: { cellWidth: 25 },
+        4: { cellWidth: 25 },
+        5: { cellWidth: 25 },
+        6: { cellWidth: 30 },
+        7: { cellWidth: 100 },
       },
     });
 
-    doc.save("Individual_Report.pdf");
+    // ====== Summary Section ======
+    const finalY = doc.lastAutoTable.finalY + 10;
+
+    const totalWorkingDays = filteredData.filter(
+      (item) => item.type && item.type.toUpperCase() === "W"
+    ).length;
+
+    const totalLeaveDays = filteredData.filter(
+      (item) => item.type && item.type.toUpperCase() === "L"
+    ).length;
+
+    const totalOffDays = filteredData.filter(
+      (item) =>
+        item.type &&
+        (item.type.toUpperCase() === "DO" || item.type.toUpperCase() === "OFF")
+    ).length;
+
+    // Calculate total working hours
+    const totalHours = filteredData.reduce((sum, item) => {
+      if (item.timeIn && item.timeOut) {
+        const start = new Date(`1970-01-01T${item.timeIn}`);
+        const end = new Date(`1970-01-01T${item.timeOut}`);
+        const diff = (end - start) / (1000 * 60 * 60);
+        return sum + (diff > 0 ? diff : 0);
+      }
+      return sum;
+    }, 0);
+
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("Monthly Summary", 15, finalY);
+
+    autoTable(doc, {
+      startY: finalY + 5,
+      body: [
+        ["Total Working Days", totalWorkingDays],
+        ["Total Leave Days", totalLeaveDays],
+        ["Total Off Days", totalOffDays],
+        ["Total Working Hours", totalHours.toFixed(2) + " hrs"],
+      ],
+      theme: "grid",
+      styles: { halign: "left", fontSize: 11 },
+      columnStyles: {
+        0: { cellWidth: 70, fontStyle: "bold" },
+        1: { cellWidth: 40 },
+      },
+      bodyStyles: {
+        fillColor: [224, 235, 255],
+      },
+    });
+
+    // ====== Signature Section ======
+    let signatureY = doc.lastAutoTable.finalY + 25;
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.text("Staff Signature:", 40, signatureY);
+    doc.text("Supervisor Approval:", pageWidth / 2 + 60, signatureY);
+
+    // Draw signature lines
+    doc.line(40, signatureY + 5, 100, signatureY + 5); // Staff line
+    doc.line(
+      pageWidth / 2 + 60,
+      signatureY + 5,
+      pageWidth / 2 + 120,
+      signatureY + 5
+    ); // Supervisor line
+
+    // Optional note
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "italic");
+    doc.text(
+      "(Please sign after verifying the attendance and working hours.)",
+      15,
+      signatureY + 20
+    );
+
+    // ====== Footer ======
+    const pageHeight = doc.internal.pageSize.getHeight();
+    doc.setFontSize(10);
+    doc.text(
+      `Generated on: ${new Date().toLocaleDateString()}`,
+      15,
+      pageHeight - 10
+    );
+
+    // ====== Save PDF ======
+    const fileName = `${
+      filteredData[0].name || "Individual"
+    }_Timesheet_${monthName}.pdf`;
+    doc.save(fileName);
   };
 
   return (
@@ -498,19 +756,38 @@ function Individual() {
               className={ProfileCss.TbnRecord}
             />
 
-            <input
-              type="date"
-              value={selectedStartedDate}
-              onChange={(e) => setSelectedStartedDate(e.target.value)}
-              className={ProfileCss.TbnRecord}
-            />
+            <label>
+              Select Month:
+              <select
+                value={month}
+                onChange={(e) => setMonth(e.target.value)}
+                className={ProfileCss.TbnRecord}
+              >
+                {Array.from({ length: 12 }, (_, i) => {
+                  const m = `${i + 1}`.padStart(2, "0");
+                  const label = new Date(0, i).toLocaleString("default", {
+                    month: "short",
+                  });
+                  return (
+                    <option key={m} value={m}>
+                      {label}
+                    </option>
+                  );
+                })}
+              </select>
+            </label>
 
-            <input
-              type="date"
-              value={selectedEndDate}
-              onChange={(e) => setSelectedEndDate(e.target.value)}
-              className={ProfileCss.TbnRecord}
-            />
+            <label>
+              Select Year:
+              <input
+                type="number"
+                value={year}
+                onChange={(e) => setYear(e.target.value)}
+                min="2000"
+                max="2100"
+                className={ProfileCss.TbnRecord}
+              />
+            </label>
           </div>
         </div>
         <table className={ProfileCss.IndividualTbl}>
