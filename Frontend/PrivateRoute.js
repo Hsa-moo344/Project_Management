@@ -1,27 +1,19 @@
 import React from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
-const getUserRole = () => localStorage.getItem("role");
-const isLoggedIn = () => Boolean(localStorage.getItem("token"));
+function PrivateRoute({ children, allowedRoles }) {
+  const token = localStorage.getItem("token");
+  const userRole = localStorage.getItem("role");
 
-const PrivateRoute = ({ children, requiredRole }) => {
-  const location = useLocation();
-
-  if (!isLoggedIn()) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+  if (!token) {
+    return <Navigate to="/login" />;
   }
 
-  const userRole = getUserRole();
-
-  if (userRole === "admin") {
-    return children;
+  if (!allowedRoles.includes(userRole)) {
+    return <Navigate to="/unauthorized" />;
   }
 
-  if (requiredRole && userRole === requiredRole.toLowerCase()) {
-    return children;
-  }
-
-  return <Navigate to="/unauthorized" replace />;
-};
+  return children;
+}
 
 export default PrivateRoute;
