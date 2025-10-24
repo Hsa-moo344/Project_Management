@@ -4,6 +4,26 @@ const mysql = require("mysql");
 const multer = require("multer");
 const path = require("path");
 
+// Application secuirty for API call
+// function protectRoute(allowedRoles = []) {
+//   return (req, res, next) => {
+//     const token = req.headers.authorization?.split(" ")[1];
+//     if (!token) return res.status(401).json({ message: "No token" });
+
+//     try {
+//       const decoded = jwt.verify(token, process.env.JWT_SECRET);
+//       if (!allowedRoles.includes(decoded.role)) {
+//         return res.status(403).json({ message: "Forbidden" });
+//       }
+
+//       req.user = decoded;
+//       next();
+//     } catch {
+//       res.status(403).json({ message: "Invalid or expired token" });
+//     }
+//   };
+// }
+
 // const router = express.Router();
 
 // const attendance = require("./routes/attendance");
@@ -309,12 +329,13 @@ app.delete("/attendancefunction/:id", (req, res) => {
 
 // GET - All Attendance
 app.get("/attendancefunction", (req, res) => {
-  pool.query("SELECT * FROM tbl_attendance", (err, result) => {
+  const sql = "SELECT * FROM tbl_attendance ORDER BY date DESC";
+  pool.query(sql, (err, results) => {
     if (err) {
-      console.error("Fetch error:", err.message);
-      return res.status(500).json({ error: "Failed to fetch data" });
+      console.error("Error fetching:", err.message);
+      return res.status(500).json({ error: "Database fetch failed" });
     }
-    res.status(200).json(result);
+    res.json(results);
   });
 });
 
@@ -648,6 +669,7 @@ app.post("/payrollfunction", (req, res) => {
   const {
     staffCode,
     fullName,
+    department,
     banding,
     salaryYear,
     payMonth,
@@ -663,13 +685,14 @@ app.post("/payrollfunction", (req, res) => {
 
   const sql = `
     INSERT INTO tbl_payroll 
-    (staffCode, fullName, banding, salaryYear, payMonth, workingDays, leaveDays, totalHours, hourlyRate, grossSalary, deductions, netSalary, paymentStatus) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    (staffCode, fullName, department, banding, salaryYear, payMonth, workingDays, leaveDays, totalHours, hourlyRate, grossSalary, deductions, netSalary, paymentStatus) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   const values = [
     staffCode,
     fullName,
+    department,
     banding,
     salaryYear,
     payMonth,
@@ -713,6 +736,7 @@ app.put("/payrollfunction/:id", (req, res) => {
   const {
     staffCode,
     fullName,
+    department,
     banding,
     salaryYear,
     payMonth,
@@ -730,6 +754,7 @@ app.put("/payrollfunction/:id", (req, res) => {
     UPDATE tbl_payroll SET
       staffCode = ?,
       fullName = ?,
+      department = ?,
       banding = ?,
       salaryYear = ?,
       payMonth = ?,
@@ -747,6 +772,7 @@ app.put("/payrollfunction/:id", (req, res) => {
   const values = [
     staffCode,
     fullName,
+    department,
     banding,
     salaryYear,
     payMonth,
@@ -787,6 +813,7 @@ app.get("/api/payrollfunction", (req, res) => {
     SELECT 
       staffCode,
       fullName,
+      department,
       banding,
       salaryYear,
       payMonth,
@@ -810,45 +837,20 @@ app.get("/api/payrollfunction", (req, res) => {
   });
 });
 
-// Route to get attendance by department
-// app.get("/api/attendance", (req, res) => {
-//   const department = req.query.department;
-
-//   if (department) {
-//     const sql = "SELECT * FROM tbl_attendance WHERE department = ?";
-//     pool.query(sql, [department], (err, results) => {
-//       if (err) {
-//         console.error("Database error:", err);
-//         return res.status(500).json({ error: "Database query failed" });
-//       }
-//       res.json(results);
-//     });
-//   } else {
-//     const sql =
-//       "SELECT department, COUNT(id) AS total_staff FROM tbl_attendance GROUP BY department";
-//     pool.query(sql, (err, results) => {
-//       if (err) {
-//         console.error("Database error:", err);
-//         return res.status(500).json({ error: "Database query failed" });
-//       }
-//       res.json(results);
-//     });
-//   }
-// });
-
 // Add Staff Table
 // POST - Create staff
 app.post("/staffdepartment", (req, res) => {
-  const { staffCode, fullName, gender, position, department } = req.body;
+  const { staffCode, fullName, banding, gender, position, department, remark } =
+    req.body;
 
   const sql = `
-    INSERT INTO tbl_staff (staffCode, fullName, gender, position, department)
-    VALUES (?, ?, ?, ?, ?)
+    INSERT INTO tbl_staff (staffCode, fullName, banding, gender, position, department, remark)
+    VALUES (?, ?, ?, ?, ?,?,?)
   `;
 
   pool.query(
     sql,
-    [staffCode, fullName, gender, position, department],
+    [staffCode, fullName, banding, gender, position, department, remark],
     (err, results) => {
       if (err) {
         console.error("Insert error:", err.message);
@@ -876,17 +878,18 @@ app.get("/staffdepartment", (req, res) => {
 // PUT - Update staff by ID
 app.put("/staffdepartment/:id", (req, res) => {
   const { id } = req.params;
-  const { staffCode, fullName, gender, position, department } = req.body;
+  const { staffCode, fullName, banding, gender, position, department, remark } =
+    req.body;
 
   const sql = `
     UPDATE tbl_staff
-    SET staffCode = ?, fullName = ?, gender = ?, position = ?, department = ?
+    SET staffCode = ?, fullName = ?, banding =?, gender = ?, position = ?, department = ?, remark = ?
     WHERE id = ?
   `;
 
   pool.query(
     sql,
-    [staffCode, fullName, gender, position, department, id],
+    [staffCode, fullName, banding, gender, position, department, remark, id],
     (err) => {
       if (err) {
         console.error("Update error:", err.message);
@@ -949,22 +952,6 @@ app.get("/api/department-count", (req, res) => {
   });
 });
 
-// Staff Inforamtion page count by payroll
-app.get("/api/payroll-data", (req, res) => {
-  const sql = `
-    SELECT *
-        FROM tbl_staff s
-        RIGHT JOIN tbl_payroll p ON s.staffCode = p.staffCode;
-  `;
-  pool.query(sql, (err, result) => {
-    if (err) {
-      console.error("Database error: ", err);
-      return res.status(500).json({ error: "Database query failed" });
-    }
-    res.json(result);
-  });
-});
-
 // Dashboard from tbl_staff table
 // API endpoint to get all staff
 app.get("/api/department-count", (req, res) => {
@@ -988,7 +975,7 @@ app.get("/api/department-banding", (req, res) => {
     SELECT 
       IFNULL(banding, 'Unknown') AS banding,
       COUNT(staffCode) AS total
-    FROM tbl_payroll
+    FROM tbl_staff
     GROUP BY banding
     ORDER BY
       CASE WHEN banding = 'Unknown' THEN 1 ELSE 0 END,
@@ -1001,6 +988,98 @@ app.get("/api/department-banding", (req, res) => {
       return res.status(500).json({ error: "Database error" });
     }
     res.json(results);
+  });
+});
+
+// Banding Status
+app.get("/api/banding-status-count", (req, res) => {
+  const sql = `
+   SELECT 
+    remark, 
+    COUNT(*) AS total
+FROM tbl_staff
+WHERE remark IN ('Resign', 'Promotion', 'change department', 'Part Time', 'Volunteer')
+GROUP BY remark;
+  `;
+  pool.query(sql, (err, results) => {
+    if (err) {
+      console.error("❌ Error fetching data:", err);
+      res.status(500).send("Server error");
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+// Total staff count gender
+app.get("/api/Total-gender-count", (req, res) => {
+  const sql = `
+    SELECT 
+      IFNULL(gender, 'No Gender') AS gender,
+      COUNT(*) AS total
+    FROM tbl_staff
+    GROUP BY IFNULL(gender, 'No Gender');
+  `;
+  pool.query(sql, (err, results) => {
+    if (err) {
+      console.error("❌ Error fetching data:", err);
+      res.status(500).send("Server error");
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+// API to get staff count only Health Departments
+app.get("/api/staff/healthdepartments", (req, res) => {
+  const sql = `
+    SELECT department, COUNT(*) AS total
+      FROM tbl_staff
+      WHERE department IN (
+        'Health Services', 'ECU', 'IPU', 'Nursing Program',
+        'VCT, Blood Bank Department (HIV Program)', 'RH IPD', 'RH OPD',
+        'HIS and Registration', 'Eye Program', 'Lab', 'Referral',
+        'Adult & Child IPD', 'Physiotherapy & TCM Department', 'Surgical OPD',
+        'Adult OPD', 'Child OPD & Immunization', 'Dental',
+        'Pharmacy OPD and Central Pharmacy', 'Pharamcy IPD'
+      )
+      GROUP BY department;
+  `;
+  pool.query(sql, (err, results) => {
+    if (err) {
+      console.error("❌ Error fetching data:", err);
+      res.status(500).send("Server error");
+    } else {
+      res.json(results);
+    }
+  });
+});
+
+// API to get staff count only Operation Departments
+app.get("/api/staff/operationdepartments", (req, res) => {
+  const sql = `
+    SELECT department, COUNT(*) AS total
+    FROM tbl_staff
+    WHERE department IN (
+      'Organisational Development', 
+      'Kitchen',
+      'Health Training and Community Health',
+      'Community Health',
+      'Community Health and SRHR Program',
+      'School Health',
+      'Training Office',
+      'Bachelor of Nursing',
+      'Library'
+    )
+    GROUP BY department;
+  `;
+
+  pool.query(sql, (err, results) => {
+    if (err) {
+      console.error("❌ Error fetching data:", err);
+      return res.status(500).json({ error: "Server error" });
+    }
+    res.json(results); // should return [{department: "Kitchen", total: 5}, ...]
   });
 });
 
