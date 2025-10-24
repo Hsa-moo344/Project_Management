@@ -5,6 +5,9 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
+import { useState } from "react";
+
+// Import Components
 import Navbar from "./components/Navbar";
 import Home from "./components/Home";
 import StaffInfo from "./components/StaffInfo";
@@ -19,52 +22,158 @@ import Fundraising from "./components/Fundraising";
 import Individual from "./components/Individual";
 import ProfileDetail from "./components/ProfileDetail";
 import Payroll from "./components/Payroll";
-import { useState } from "react";
 import TotalStaff from "./components/TotalStaff";
-import Security from "./components/Security";
+import StaffContactNav from "./components/StaffContactNav";
+import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
   const location = useLocation();
   const hideNavbar = location.pathname === "/login";
 
   return (
     <>
       {!hideNavbar && <Navbar />}
+
       <Routes>
+        {/* Default Route */}
         <Route path="/" element={<Navigate to="/login" />} />
+
+        {/* Login */}
         <Route
           path="/login"
           element={<Login setIsLoggedIn={setIsLoggedIn} />}
         />
+
+        {/* Unauthorized Page */}
         <Route
-          path="/login"
-          element={isLoggedIn ? <Home /> : <Navigate to="/login" />}
+          path="/unauthorized"
+          element={
+            <h2 style={{ textAlign: "center", marginTop: "50px" }}>
+              🚫 Access Denied, only admin can access.
+            </h2>
+          }
         />
-        {/* <Route
+
+        {/* ==========================
+            ADMIN (Full Access)
+           ========================== */}
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute allowedRoles={["admin", "staff"]}>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/add-staff"
+          element={
+            <PrivateRoute allowedRoles={["admin"]}>
+              <AddStaff />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/staffdatabase"
+          element={
+            <PrivateRoute allowedRoles={["admin"]}>
+              <Staffdatabase />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/fundraising"
+          element={
+            <PrivateRoute allowedRoles={["admin"]}>
+              <Fundraising />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/totalstaff"
+          element={
+            <PrivateRoute allowedRoles={["admin"]}>
+              <TotalStaff />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/payroll"
+          element={
+            <PrivateRoute allowedRoles={["admin"]}>
+              <Payroll />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/individual"
+          element={
+            <PrivateRoute allowedRoles={["admin"]}>
+              <Individual />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/staffinfo"
+          element={
+            <PrivateRoute allowedRoles={["admin"]}>
+              <StaffInfo />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/staffcontact"
+          element={
+            <PrivateRoute allowedRoles={["admin"]}>
+              <StaffContact />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/staffcontactnav"
+          element={
+            <PrivateRoute allowedRoles={["admin"]}>
+              <StaffContactNav />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/profile"
+          element={
+            <PrivateRoute allowedRoles={["admin"]}>
+              <Profile />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/profiledetail"
+          element={
+            <PrivateRoute allowedRoles={["admin"]}>
+              <ProfileDetail />
+            </PrivateRoute>
+          }
+        />
+
+        {/* ==========================
+            STAFF (Limited Access)
+           ========================== */}
+        <Route
           path="/home"
-          element={isLoggedIn ? <Home /> : <Navigate to="/home" />}
-        /> */}
-        <Route path="/home" element={<Home />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-
-        {/* Login admin and user */}
-
-        <Route path="/staffinfo" element={<StaffInfo />} />
-        <Route path="/staffcontact" element={<StaffContact />} />
-
-        {/* New Routes */}
-        <Route path="/attendance" element={<Attendance />} />
-        <Route path="/payroll" element={<Payroll />} />
-        <Route path="/add-staff" element={<AddStaff />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/fundraising" element={<Fundraising />} />
-        <Route path="/staffdatabase" element={<Staffdatabase />} />
-        <Route path="/individual" element={<Individual />} />
-        <Route path="/profiledetail" element={<ProfileDetail />} />
-        <Route path="/totalstaff" element={<TotalStaff />} />
-        <Route path="/security" element={<Security />} />
+          element={
+            <PrivateRoute allowedRoles={["admin", "staff"]}>
+              <Home />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/attendance"
+          element={
+            <PrivateRoute allowedRoles={["admin", "staff"]}>
+              <Attendance />
+            </PrivateRoute>
+          }
+        />
       </Routes>
     </>
   );
