@@ -1311,7 +1311,7 @@ select:focus {
   align-items: center;
   flex-direction: column;
   text-align: center;
-  max-width: 90%;
+  max-width: 100%;
   margin: 0 auto;
   padding: 20px;
   border-radius: 8px;
@@ -1991,4 +1991,535 @@ h3 {
 .activePage {
   background-color: #007bff;
   color: white;
+}
+
+/* HR Profile Detail Session */
+.MainProfileDetail {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8f9fa;
+  padding: 20px;
+  color: #333;
+}
+
+/* ===== Header ===== */
+.LogoMTC {
+  width: 120px;
+  display: block;
+  margin: 0 auto 10px;
+}
+
+.AddressMTC {
+  text-align: center;
+  font-size: 0.85rem;
+  color: #555;
+  margin-bottom: 30px;
+}
+
+.AddressMTC a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.AddressMTC a:hover {
+  text-decoration: underline;
+}
+
+/* ===== Form Container ===== */
+.MainProfileDetail {
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 40px 50px;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 3px 15px rgba(0, 0, 0, 0.08);
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  line-height: 1.6;
+}
+
+/* ====== Profile Header ====== */
+.MainProfileDetail {
+  max-width: 1000px;
+  margin: 40px auto;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 30px 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  font-family: "Segoe UI", sans-serif;
+  color: #333;
+}
+
+/* === Header Section === */
+.LogoMTC {
+  display: block;
+  margin: 0 auto;
+  width: 120px;
+  height: auto;
+}
+
+.AddressMTC {
+  text-align: center;
+  font-style: normal;
+  font-size: 0.95rem;
+  color: #555;
+  margin-top: 10px;
+  line-height: 1.6;
+}
+
+.AddressMTC a {
+  color: #0077cc;
+  text-decoration: none;
+}
+
+.AddressMTC a:hover {
+  text-decoration: underline;
+}
+
+/* === Form Container === */
+.formProfileDetail {
+  margin-top: 30px;
+}
+
+.formProfileDetail h3 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.4rem;
+  color: #1e4d2b;
+  border-bottom: 2px solid #1e4d2b;
+  display: inline-block;
+  padding-bottom: 4px;
+}
+
+/* === Profile Photo Section === */
+.profileHeader {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.profilePhotoSection {
+  text-align: center;
+  position: relative;
+}
+
+.profilePhoto {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #1e4d2b;
+  margin-bottom: 10px;
+}
+
+.photoInput {
+  display: block;
+  margin: 0 auto;
+}
+
+/* === Form Inputs === */
+.formContainer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px 25px;
+}
+
+.formContainer h4 {
+  grid-column: 1 / -1;
+  margin-top: 25px;
+  font-size: 1.2rem;
+  color: #1e4d2b;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 4px;
+}
+
+.formContainer label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.formContainer input,
+.formContainer select {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-top: 4px;
+  font-size: 0.95rem;
+}
+
+.formContainer input:focus,
+.formContainer select:focus {
+  border-color: #1e4d2b;
+  outline: none;
+}
+
+/* === Education Section === */
+/* === Education Section === */
+.educationRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap; /* allow wrapping on small screens */
+}
+
+/* Label for Education Level */
+.educationRow label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  white-space: nowrap;
+  min-width: 170px;
+  color: #333;
+}
+
+/* Education Level Dropdown */
+.educationRow select {
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  width: 150px;
+}
+
+/* Input fields: Institution, Major, Place, Period, Certificate */
+.educationRow input {
+  flex: 1;
+  min-width: 120px;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+/* Highlight focus */
+.educationRow input:focus,
+.educationRow select:focus {
+  outline: none;
+  border-color: #1e4d2b;
+  box-shadow: 0 0 3px rgba(30, 77, 43, 0.3);
+}
+
+/* Optional: style for education level label at the start */
+.educationRow strong {
+  color: #1e4d2b;
+  font-weight: 600;
+  margin-right: 10px;
+  min-width: 100px;
+}
+
+/* Compact spacing for smaller devices */
+@media (max-width: 900px) {
+  .educationRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .educationRow label {
+    width: 100%;
+    margin-bottom: 4px;
+  }
+
+  .educationRow input,
+  .educationRow select {
+    width: 100%;
+  }
+}
+/* Add button styling (reuse existing style) */
+.addBtn {
+  grid-column: 1 / -1;
+  background: #1e4d2b;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 14px;
+  cursor: pointer;
+  margin-top: 10px;
+  font-size: 0.9rem;
+  transition: background 0.3s;
+}
+
+.addBtn:hover {
+  background: #2c6b3f;
+}
+
+/* === Marital Status === */
+.statusOptions {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.statusBox {
+  padding: 8px 14px;
+  background: #eee;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
+}
+
+.statusBox:hover {
+  background: #d6eadf;
+}
+
+.activeStatus {
+  background: #1e4d2b;
+  color: white;
+}
+
+/* === Dependents Table === */
+.dependentSection {
+  grid-column: 1 / -1;
+  margin-top: 10px;
+}
+
+.dependentTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 10px;
+}
+
+.dependentTable th,
+.dependentTable td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.dependentTable th {
+  background: #e8f5e9;
+}
+
+/* === Work Experience Table === */
+.workTable {
+  grid-column: 1 / -1; /* span full width in form */
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  font-size: 0.95rem;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.workTable th,
+.workTable td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.workTable th {
+  background-color: #e8f5e9;
+  color: #1e4d2b;
+  font-weight: 600;
+}
+
+.workTable tr:nth-child(even) {
+  background-color: #fafafa;
+}
+
+.workTable input {
+  width: 100%;
+  padding: 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+
+.workTable input:focus {
+  border-color: #1e4d2b;
+  outline: none;
+  box-shadow: 0 0 3px rgba(30, 77, 43, 0.3);
+}
+
+/* Buttons inside the form */
+.addBtn,
+.removeBtn {
+  background: #1e4d2b;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.3s ease;
+}
+
+.addBtn {
+  margin-top: 10px;
+}
+
+.addBtn:hover,
+.removeBtn:hover {
+  background: #2c6b3f;
+}
+
+.removeBtn {
+  background: #b71c1c;
+}
+
+.removeBtn:hover {
+  background: #d32f2f;
+}
+
+/* Responsive for smaller screens */
+@media (max-width: 768px) {
+  .workTable {
+    font-size: 0.85rem;
+  }
+
+  .workTable th,
+  .workTable td {
+    padding: 6px;
+  }
+
+  .workTable input {
+    font-size: 0.85rem;
+    padding: 5px;
+  }
+}
+
+.addBtn,
+.removeBtn {
+  background: #1e4d2b;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.addBtn:hover,
+.removeBtn:hover {
+  background: #2f6b3e;
+}
+
+/* === Language & Computer Skill Tables === */
+.languageTable {
+  grid-column: 1 / -1;
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.languageTable th,
+.languageTable td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.languageTable th {
+  background: #f9f9f9;
+  font-weight: 600;
+}
+
+/* === Submit Button === */
+.submitButton {
+  grid-column: 1 / -1;
+  margin-top: 30px;
+  padding: 12px 20px;
+  background: #1e4d2b;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.submitButton:hover {
+  background: #25663b;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+  .formContainer {
+    grid-template-columns: 1fr;
+  }
+
+  .educationRow {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .statusOptions {
+    justify-content: center;
+  }
+}
+
+/* Approved, Applier, receiver */
+/* --- Main 3-column layout --- */
+.approvalSection {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
+  margin-top: 20px;
+  gap: 10px;
+  width: 200%;
+}
+
+/* --- Each approval form box --- */
+.approvalForm {
+  background-color: #f9fafb;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 15px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.approvalForm:hover {
+  background-color: #f3f4f6;
+  transform: translateY(-2px);
+}
+
+/* --- Table styling --- */
+.approvalTable {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.approvalTable th {
+  background-color: #2563eb;
+  color: white;
+  text-align: center;
+  font-size: 1rem;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+.approvalTable td {
+  padding: 6px 4px;
+  font-size: 0.95rem;
+  color: #374151;
+}
+
+/* --- Inputs --- */
+.approvalTable input[type="text"] {
+  width: 90%;
+  padding: 5px 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  margin-top: 4px;
+  outline: none;
+}
+
+.approvalTable input[type="text"]:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
 }
