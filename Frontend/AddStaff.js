@@ -26,17 +26,21 @@ function AddStaff() {
   const [searchQuery, setSearchQuery] = useState("");
   const rowsPerPage = 5;
 
-  // ✅ Filter staff by name or staffCode
+  /// Filter staff by name or staffCode
   const filteredStaff = staffData.filter(
     (item) =>
       item.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.staffCode.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  // ✅ Slice filtered data for pagination
+  // Slice filtered data for pagination
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentStaff = filteredStaff.slice(indexOfFirstRow, indexOfLastRow);
+
+  // Change page
+  const totalPages = Math.ceil(filteredStaff.length / rowsPerPage);
+  const handlePageChange = (page) => setCurrentPage(page);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,17 +51,25 @@ function AddStaff() {
         setFormData({
           staffCode: value,
           fullName: staff.fullName,
+          banding: staff.banding,
           gender: "",
           position: staff.position,
           department: staff.department,
+          startDate: staff.startDate,
+          endDate: staff.endDate,
+          remark: staff.remark,
         });
       } else {
         setFormData((prev) => ({
           ...prev,
           [name]: value,
           fullName: "",
+          banding: "",
           position: "",
           department: "",
+          startDate: "",
+          endDate: "",
+          remark: "",
         }));
       }
     } else if (name === "fullName") {
@@ -69,9 +81,13 @@ function AddStaff() {
         setFormData({
           staffCode: code,
           fullName: value,
+          banding: data.banding,
           gender: "",
           position: data.position,
           department: data.department,
+          startDate: data.startDate,
+          endDate: data.endDate,
+          remark: data.remark,
         });
       } else {
         setFormData((prev) => ({
@@ -80,6 +96,9 @@ function AddStaff() {
           staffCode: "",
           position: "",
           department: "",
+          startDate: "",
+          endDate: "",
+          remark: "",
         }));
       }
     } else {
@@ -146,6 +165,9 @@ function AddStaff() {
         gender: staff.gender || "",
         position: staff.position || "",
         department: staff.department || "",
+        startDate: staff.startDate || "",
+        endDate: staff.endDate || "",
+        remark: staff.remark || "",
       });
       setEditId(id);
     }
@@ -194,6 +216,33 @@ function AddStaff() {
         </label>
 
         <label>
+          Banding:
+          <input
+            type="text"
+            name="banding"
+            value={formData.banding}
+            onChange={handleChange}
+            list="BandingOpt" // <-- must connect input to datalist
+            required
+          />
+          <datalist id="BandingOpt">
+            <option value="Band 1" />
+            <option value="Band 2" />
+            <option value="Band 3" />
+            <option value="Band 4" />
+            <option value="Band 5" />
+            <option value="Band 6" />
+            <option value="Band 7" />
+            <option value="Band 8" />
+            <option value="Band 9" />
+            <option value="Band 10" />
+            <option value="Band 11" />
+            <option value="Band 12" />
+            <option value="Band 13" />
+          </datalist>
+        </label>
+
+        <label>
           Gender:
           <select
             name="gender"
@@ -233,10 +282,34 @@ function AddStaff() {
         </label>
 
         <label>
+          Staff Start Contract Date:
+          <input
+            type="date"
+            name="start_date"
+            value={formData.start_date}
+            onChange={handleChange}
+            required
+          />
+        </label>
+        <label>
+          Staff Contract End Date:
+          <input
+            type="date"
+            name="end_date"
+            value={formData.end_date}
+            onChange={handleChange}
+          />
+        </label>
+
+        <label>
           Remark:
           <select name="remark" value={formData.remark} onChange={handleChange}>
             <option value="">Select Remark</option>
             <option>Resign</option>
+            <option>Change department</option>
+            <option>Promotion</option>
+            <option>Part Time</option>
+            <option>Volunteer</option>
           </select>
         </label>
 
@@ -249,7 +322,10 @@ function AddStaff() {
         type="text"
         placeholder="Search by name or staff code"
         value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
+        onChange={(e) => {
+          setSearchQuery(e.target.value);
+          setCurrentPage(1); // reset to page 1 when searching
+        }}
         style={{ marginBottom: "10px", padding: "5px", width: "250px" }}
       />
 
@@ -259,43 +335,58 @@ function AddStaff() {
             <th>No.</th>
             <th>Staff Code</th>
             <th>Full Name</th>
+            <th>Banding</th>
             <th>Gender</th>
             <th>Position</th>
             <th>Department</th>
+            <th>Start Date</th>
+            <th>End Date</th>
             <th>Remark</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {currentStaff.map((item, index) => (
-            <tr key={item.id}>
-              <td>{indexOfFirstRow + index + 1}</td>
-              <td>{item.staffCode}</td>
-              <td>{item.fullName}</td>
-              <td>{item.gender}</td>
-              <td>{item.position}</td>
-              <td>{item.department}</td>
-              <td>{item.remark}</td>
-              <td>
-                <button
-                  onClick={() => handleEdit(item.id)}
-                  className={ProfileCss.EditBtn}
-                >
-                  Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(item.id)}
-                  className={ProfileCss.DeletetBtn}
-                >
-                  Delete
-                </button>
+          {currentStaff.length > 0 ? (
+            currentStaff.map((item, index) => (
+              <tr key={item.id}>
+                <td>{indexOfFirstRow + index + 1}</td>
+                <td>{item.staffCode}</td>
+                <td>{item.fullName}</td>
+                <td>{item.banding}</td>
+                <td>{item.gender}</td>
+                <td>{item.position}</td>
+                <td>{item.department}</td>
+                <td>{item.start_date}</td>
+                <td>{item.end_date}</td>
+                <td>{item.remark}</td>
+                <td>
+                  <button
+                    onClick={() => handleEdit(item.id)}
+                    className={ProfileCss.EditBtn}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDelete(item.id)}
+                    className={ProfileCss.DeletetBtn}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="8" style={{ textAlign: "center" }}>
+                No staff found
               </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
 
-      <div>
+      {/* 📑 Pagination */}
+      <div style={{ marginTop: "10px" }}>
         <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
@@ -303,15 +394,15 @@ function AddStaff() {
           Prev
         </button>
 
-        <span style={{ margin: "0 10px" }}>Page {currentPage}</span>
+        <span style={{ margin: "0 10px" }}>
+          Page {currentPage} of {totalPages}
+        </span>
 
         <button
           onClick={() =>
-            setCurrentPage((prev) =>
-              prev < Math.ceil(staffData.length / rowsPerPage) ? prev + 1 : prev
-            )
+            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
           }
-          disabled={currentPage >= Math.ceil(staffData.length / rowsPerPage)}
+          disabled={currentPage === totalPages || totalPages === 0}
         >
           Next
         </button>
@@ -321,4 +412,5 @@ function AddStaff() {
 }
 
 export default AddStaff;
+
 
