@@ -96,17 +96,6 @@ app.get("/api/fundraisingfunction", (req, res) => {
   );
 });
 
-// Get All Payroll Records
-// app.get("/payrollfunction", (req, res) => {
-//   pool.query("SELECT * FROM tbl_payroll", (err, results) => {
-//     if (err) {
-//       console.error("Select error:", err);
-//       return res.status(500).send("Error fetching payrolls");
-//     }
-//     res.json(results);
-//   });
-// });
-
 // Get All tbl_timesheet
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
@@ -180,21 +169,6 @@ app.delete("/api/fundraisingfunction/:id", (req, res) => {
     res.json({ message: "Item deleted" });
   });
 });
-
-// Login user
-// app.post("/login", (req, res) => {
-//   const { email, password } = req.body;
-//   const sql = "SELECT * FROM users WHERE email = ? AND password = ?";
-
-//   pool.query(sql, [email, password], (err, results) => {
-//     if (err) return res.status(500).json({ error: "Database error" });
-//     if (results.length === 0)
-//       return res.status(401).json({ error: "Invalid credentials" });
-
-//     const user = results[0];
-//     res.status(200).json({ email: user.email, role: user.role });
-//   });
-// });
 
 //  Attendance form insert
 app.post("/attendancefunction", (req, res) => {
@@ -839,18 +813,43 @@ app.get("/api/payrollfunction", (req, res) => {
 
 // Add Staff Table
 // POST - Create staff
+// POST - Insert new staff record
 app.post("/staffdepartment", (req, res) => {
-  const { staffCode, fullName, banding, gender, position, department, remark } =
-    req.body;
+  const {
+    staffCode,
+    fullName,
+    banding,
+    gender,
+    position,
+    department,
+    start_date,
+    end_date,
+    remark,
+  } = req.body;
+
+  // ✅ Convert empty string to NULL before inserting
+  const startDate = start_date === "" ? null : start_date;
+  const endDate = end_date === "" ? null : end_date;
 
   const sql = `
-    INSERT INTO tbl_staff (staffCode, fullName, banding, gender, position, department, remark)
-    VALUES (?, ?, ?, ?, ?,?,?)
+    INSERT INTO tbl_staff 
+      (staffCode, fullName, banding, gender, position, department, start_date, end_date, remark)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   pool.query(
     sql,
-    [staffCode, fullName, banding, gender, position, department, remark],
+    [
+      staffCode,
+      fullName,
+      banding,
+      gender,
+      position,
+      department,
+      startDate, // ✅ fixed here
+      endDate, // ✅ fixed here
+      remark,
+    ],
     (err, results) => {
       if (err) {
         console.error("Insert error:", err.message);
@@ -863,39 +862,85 @@ app.post("/staffdepartment", (req, res) => {
   );
 });
 
-// GET - get all staff
+// GET - Fetch all staff records
 app.get("/staffdepartment", (req, res) => {
   const sql = "SELECT * FROM tbl_staff";
+
   pool.query(sql, (err, results) => {
     if (err) {
       console.error("Fetch error:", err.message);
       return res.status(500).json({ error: "Database fetch failed" });
     }
-    res.status(200).json(results);
+
+    // ✅ Convert start_date and end_date to "YYYY-MM-DD" format only
+    const formattedResults = results.map((row) => {
+      return {
+        ...row,
+        start_date: row.start_date
+          ? new Date(row.start_date).toISOString().split("T")[0]
+          : null,
+        end_date: row.end_date
+          ? new Date(row.end_date).toISOString().split("T")[0]
+          : null,
+      };
+    });
+
+    res.status(200).json(formattedResults);
   });
 });
 
-// PUT - Update staff by ID
+// PUT - Update existing staff record
 app.put("/staffdepartment/:id", (req, res) => {
-  const { id } = req.params;
-  const { staffCode, fullName, banding, gender, position, department, remark } =
-    req.body;
+  const {
+    staffCode,
+    fullName,
+    banding,
+    gender,
+    position,
+    department,
+    start_date,
+    end_date,
+    remark,
+  } = req.body;
+
+  // ✅ Convert empty string to NULL
+  const startDate = start_date === "" ? null : start_date;
+  const endDate = end_date === "" ? null : end_date;
 
   const sql = `
     UPDATE tbl_staff
-    SET staffCode = ?, fullName = ?, banding =?, gender = ?, position = ?, department = ?, remark = ?
+    SET staffCode = ?, 
+        fullName = ?, 
+        banding = ?, 
+        gender = ?, 
+        position = ?, 
+        department = ?, 
+        start_date = ?, 
+        end_date = ?, 
+        remark = ?
     WHERE id = ?
   `;
 
   pool.query(
     sql,
-    [staffCode, fullName, banding, gender, position, department, remark, id],
-    (err) => {
+    [
+      staffCode,
+      fullName,
+      banding,
+      gender,
+      position,
+      department,
+      startDate, // ✅ safe conversion
+      endDate, // ✅ safe conversion
+      remark,
+      req.params.id,
+    ],
+    (err, results) => {
       if (err) {
         console.error("Update error:", err.message);
-        return res.status(500).json({ error: "Update failed" });
+        return res.status(500).json({ message: "Database update error" });
       }
-      res.status(200).json({ message: "Update successful" });
+      res.json({ message: "Staff updated successfully" });
     }
   );
 });
@@ -1131,6 +1176,398 @@ app.delete("/api/staffcontactfunction/:id", (req, res) => {
   pool.query(sql, [id], (err) => {
     if (err) return res.status(500).send("Failed to delete staff contact");
     res.send("Staff contact deleted successfully");
+  });
+});
+
+// Human Resource - Staff full Application
+app.post("/api/hrprofile", (req, res) => {
+  const {
+    name,
+    staffCode,
+    dateofbirth,
+    gender,
+    ethnicity,
+    religion,
+    placeofbirth,
+    country,
+    township,
+    village,
+    currentaddress,
+    classification_id,
+    classification_number,
+    father_name,
+    father_ethnicity,
+    father_religion,
+    mother_name,
+    mother_ethnicity,
+    mother_religion,
+    applyed_department_and_job,
+    applyed_date,
+    employment_date,
+  } = req.body;
+
+  // ✅ Validation
+  if (!staffCode || !name) {
+    return res.status(400).json({ message: "Missing required fields" });
+  }
+
+  // ✅ Correct Insert SQL
+  const sql = `
+    INSERT INTO hr_profile (
+      staffCode, name, dateofbirth, gender, ethnicity, religion,
+      placeofbirth, country, township, village, currentaddress, classification_id,
+      classification_number,
+      father_name, father_ethnicity, father_religion,
+      mother_name, mother_ethnicity, mother_religion,
+      applyed_department_and_job,
+      applyed_date,
+      employment_date
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?,?,?)
+    ON DUPLICATE KEY UPDATE
+      name = VALUES(name),
+      dateofbirth = VALUES(dateofbirth),
+      gender = VALUES(gender),
+      ethnicity = VALUES(ethnicity),
+      religion = VALUES(religion),
+      placeofbirth = VALUES(placeofbirth),
+      country = VALUES(country),
+      township = VALUES(township),
+      village = VALUES(village),
+      currentaddress = VALUES(currentaddress),
+      classification_id = VALUES(classification_id),
+      classification_number = VALUES(classification_number),
+      father_name = VALUES(father_name),
+      father_ethnicity = VALUES(father_ethnicity),
+      father_religion = VALUES(father_religion),
+      mother_name = VALUES(mother_name),
+      mother_ethnicity = VALUES(mother_ethnicity),
+      mother_religion = VALUES(mother_religion),
+      applyed_department_and_job = VALUES(applyed_department_and_job),
+      applyed_date = VALUES(applyed_date),
+      employment_date = VALUES(employment_date);
+  `;
+
+  const values = [
+    staffCode,
+    name,
+    dateofbirth,
+    gender,
+    ethnicity,
+    religion,
+    placeofbirth,
+    country,
+    township,
+    village,
+    currentaddress,
+    classification_id,
+    classification_number,
+    father_name,
+    father_ethnicity,
+    father_religion,
+    mother_name,
+    mother_ethnicity,
+    mother_religion,
+    applyed_department_and_job,
+    applyed_date,
+    employment_date,
+  ];
+
+  pool.query(sql, values, (err, result) => {
+    if (err) {
+      console.error("❌ Database error:", err);
+      return res.status(500).json({ message: "Database error" });
+    }
+    res.json({ message: "✅ HR Profile saved successfully" });
+  });
+});
+
+// ===== 2️⃣ Education Background API =====
+app.post("/api/educationprofile", (req, res) => {
+  const {
+    profile_id,
+    staffCode,
+    education_level,
+    institution,
+    major,
+    place,
+    period,
+    certificate,
+  } = req.body;
+
+  const sql = `
+    INSERT INTO education_background
+    (profile_id, staffCode, education_level, institution, major, place, period, certificate)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+  pool.query(
+    sql,
+    [
+      profile_id,
+      staffCode,
+      education_level,
+      institution,
+      major,
+      place,
+      period,
+      certificate,
+    ],
+    (err, result) => {
+      if (err) {
+        console.error("❌ Database Error:", err);
+        return res.status(500).json({ error: "Database Error" });
+      }
+      res.json({
+        message: "✅ Education background saved successfully!",
+        insertId: result.insertId,
+      });
+    }
+  );
+});
+
+// Insert multiple marital status records
+app.post("/api/maritalStatus", (req, res) => {
+  const { staffCode, maritalRecords } = req.body;
+
+  if (!staffCode || !Array.isArray(maritalRecords)) {
+    return res.status(400).json({ message: "Invalid data format" });
+  }
+
+  const sql =
+    "INSERT INTO marital_status (staffCode, spouse_name, spouse_gender, date_of_birth, relationship, created_at) VALUES ?";
+
+  const values = maritalRecords.map((r) => [
+    staffCode,
+    r.spouse_name,
+    r.spouse_gender,
+    r.date_of_birth,
+    r.relationship,
+    new Date(),
+  ]);
+
+  pool.query(sql, [values], (err, result) => {
+    if (err) {
+      console.error("DB Error:", err);
+      return res.status(500).json({ message: "Database insert failed" });
+    }
+    res.json({ message: "Marital records saved successfully", result });
+  });
+});
+
+// Work experience API section
+app.post("/api/workExperience", (req, res) => {
+  const { staffCode, workExperience } = req.body;
+
+  if (!staffCode || !Array.isArray(workExperience)) {
+    return res.status(400).json({ message: "Invalid data format" });
+  }
+
+  // Convert empty strings to null
+  const values = workExperience.map((item) => [
+    staffCode,
+    item.main_responsibility || null,
+    item.from_year || null,
+    item.to_year || null,
+    item.organization || null,
+    item.place || null,
+  ]);
+
+  const sql =
+    "INSERT INTO work_experience (staffCode, main_responsibility, from_year, to_year, organization, place) VALUES ?";
+
+  pool.query(sql, [values], (err, result) => {
+    if (err) {
+      console.error("DB Error:", err);
+      return res.status(500).json({ message: "Database insert failed" });
+    }
+    res.json({ message: "Work experience saved successfully", result });
+  });
+});
+
+// Training Period Section API section
+app.post("/api/trainingPeriodSection", (req, res) => {
+  const { staffCode, trainingSection } = req.body;
+
+  if (!staffCode || !Array.isArray(trainingSection)) {
+    return res.status(400).json({ message: "Invalid data format" });
+  }
+
+  // Convert empty strings to null
+  const values = trainingSection.map((item) => [
+    staffCode,
+    item.training_title || null,
+    item.training_period || null,
+    item.place || null,
+    item.organizer || null,
+  ]);
+
+  const sql =
+    "INSERT INTO staff_training (staffCode, training_title, training_period, place, organizer) VALUES ?";
+
+  pool.query(sql, [values], (err, result) => {
+    if (err) {
+      console.error("DB Error:", err);
+      return res.status(500).json({ message: "Database insert failed" });
+    }
+    res.json({ message: "Training records saved successfully", result });
+  });
+});
+
+// Staff Language Proficiency API section
+app.post("/api/languageSkill", (req, res) => {
+  const { staffCode, skills } = req.body;
+
+  if (!staffCode || !skills) {
+    return res.status(400).json({ message: "Invalid data format" });
+  }
+
+  const languages = Object.keys(skills); // e.g. ["English", "Myanmar"]
+
+  const values = languages.map((lang) => [
+    staffCode,
+    lang,
+    skills[lang].Writing || "",
+    skills[lang].Reading || "",
+    skills[lang].Speaking || "",
+  ]);
+
+  const sql = `
+    INSERT INTO staff_language_skills
+      (staffCode, language_name, writing_level, reading_level, speaking_level)
+    VALUES ?
+    ON DUPLICATE KEY UPDATE
+      writing_level = VALUES(writing_level),
+      reading_level = VALUES(reading_level),
+      speaking_level = VALUES(speaking_level);
+  `;
+
+  pool.query(sql, [values], (err, result) => {
+    if (err) {
+      console.error("Error saving language skills:", err);
+      return res.status(500).json({ message: "Database error" });
+    }
+    res.status(200).json({ message: "Language skills saved successfully" });
+  });
+});
+
+// Computer Skills API section
+app.post("/api/computerSkill", (req, res) => {
+  const { staffCode, computerSkillSection } = req.body;
+
+  if (!staffCode || !computerSkillSection) {
+    return res.status(400).json({ message: "Invalid data" });
+  }
+
+  const sql = `
+    INSERT INTO staff_computer_skills 
+    (staffCode, microsoft_word, microsoft_excel, powerpoint, email, internet, basic_maintenance, photoshop, access_database)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ON DUPLICATE KEY UPDATE
+      microsoft_word = VALUES(microsoft_word),
+      microsoft_excel = VALUES(microsoft_excel),
+      powerpoint = VALUES(powerpoint),
+      email = VALUES(email),
+      internet = VALUES(internet),
+      basic_maintenance = VALUES(basic_maintenance),
+      photoshop = VALUES(photoshop),
+      access_database = VALUES(access_database)
+  `;
+
+  const values = [
+    staffCode,
+    computerSkillSection["Microsoft Word"] || "",
+    computerSkillSection["Microsoft Excel"] || "",
+    computerSkillSection["PowerPoint"] || "",
+    computerSkillSection["Email"] || "",
+    computerSkillSection["Internet"] || "",
+    computerSkillSection["Basic Maintenance (Install Windows, Printer)"] || "",
+    computerSkillSection["Photoshop"] || "",
+    computerSkillSection["Access Database"] || "",
+  ];
+
+  pool.query(sql, values, (err) => {
+    if (err) {
+      console.error("❌ Error saving computer skills:", err);
+      return res.status(500).json({ message: "Database error" });
+    }
+    res.json({ message: "✅ Computer skills saved successfully" });
+  });
+});
+
+// Approval Section API
+// ✅ POST: Save or update approval section data
+app.post("/api/approvalSection", (req, res) => {
+  const {
+    staffCode,
+    applier_name,
+    applier_phone,
+    approved_name,
+    approved_position,
+    approved_org,
+    approved_phone,
+    receiver_name,
+    receiver_position,
+    receiver_org,
+    receiver_phone,
+  } = req.body;
+
+  // Validate input
+  if (!staffCode) {
+    return res.status(400).json({ message: "❌ Missing staffCode" });
+  }
+
+  // SQL query
+  const sql = `
+    INSERT INTO approval_section 
+    (
+      staffCode,
+      applier_name,
+      applier_phone,
+      approved_name,
+      approved_position,
+      approved_org,
+      approved_phone,
+      receiver_name,
+      receiver_position,
+      receiver_org,
+      receiver_phone
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ON DUPLICATE KEY UPDATE
+      applier_name = VALUES(applier_name),
+      applier_phone = VALUES(applier_phone),
+      approved_name = VALUES(approved_name),
+      approved_position = VALUES(approved_position),
+      approved_org = VALUES(approved_org),
+      approved_phone = VALUES(approved_phone),
+      receiver_name = VALUES(receiver_name),
+      receiver_position = VALUES(receiver_position),
+      receiver_org = VALUES(receiver_org),
+      receiver_phone = VALUES(receiver_phone)
+  `;
+
+  // Values from request body
+  const values = [
+    staffCode,
+    applier_name || "",
+    applier_phone || "",
+    approved_name || "",
+    approved_position || "",
+    approved_org || "",
+    approved_phone || "",
+    receiver_name || "",
+    receiver_position || "",
+    receiver_org || "",
+    receiver_phone || "",
+  ];
+
+  pool.query(sql, values, (err) => {
+    if (err) {
+      console.error("❌ Error saving approval section:", err);
+      return res.status(500).json({ message: "Database error" });
+    }
+    res.json({ message: "✅ Approval section saved successfully" });
   });
 });
 
