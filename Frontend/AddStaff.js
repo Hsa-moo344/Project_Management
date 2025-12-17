@@ -13,9 +13,9 @@ const initialStaffForm = {
 function AddStaff() {
   const staffDirectory = {
     "S-0001": {
-      fullName: "Dr. Cynthia Kha",
+      fullName: "MG Mg",
       department: "Organisational Development",
-      position: "Director",
+      position: "Program manager",
     },
   };
 
@@ -412,5 +412,6 @@ function AddStaff() {
 }
 
 export default AddStaff;
+
 
 
