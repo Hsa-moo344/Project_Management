@@ -15,8 +15,8 @@ function Login({ setIsLoggedIn }) {
     password: "123456",
   };
   const AdminUser = {
-    email: "hsamoo.moo02@gmail.com",
-    password: "@19062025@",
+    email: "",
+    password: "",
   };
 
   useEffect(() => {
