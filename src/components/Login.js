@@ -11,8 +11,8 @@ function Login({ setIsLoggedIn }) {
   const navigate = useNavigate();
 
   const testUser = {
-    email: "hsamoomoo02@gmail.com",
-    password: "123456",
+    email: "",
+    password: "",
   };
   const AdminUser = {
     email: "",
