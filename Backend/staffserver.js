@@ -53,7 +53,7 @@ const pool = mysql.createPool({
   connectionLimit: 10,
   host: "localhost",
   user: "hsamoomoo",
-  password: "123456",
+  password: "",
   database: "timesheet",
 });
 
