@@ -20,8 +20,8 @@ function Login({ setIsLoggedIn }) {
       let userRole = "";
 
       if (
-        email === "hsamoo.moo@maetaoclinic.org" &&
-        password === "@19062025@"
+        email === "mmm.@maetaoclinic.org" &&
+        password === ""
       ) {
         userRole = "admin";
       } else if (email === "hsamoomoo02@gmail.com" && password === "123456") {
