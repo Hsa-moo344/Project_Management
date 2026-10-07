@@ -24,7 +24,7 @@ function Login({ setIsLoggedIn }) {
         password === ""
       ) {
         userRole = "admin";
-      } else if (email === "hsamoomoo02@gmail.com" && password === "123456") {
+      } else if (email === "hsamoomoo02@gmail.com" && password === "") {
         userRole = "staff";
       } else {
         throw new Error("Invalid credentials");
